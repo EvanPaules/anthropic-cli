@@ -169,7 +169,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 	"output-config": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "output-config.effort",
-			Usage:      "All possible effort levels.",
+			Usage:      "How much effort the model should put into its response. Higher effort levels may result in more thorough analysis but take longer.\n\nValid values are `low`, `medium`, `high`, `xhigh`, or `max`.",
 			InnerField: "effort",
 		},
 		&requestflag.InnerFlag[map[string]any]{
@@ -396,7 +396,7 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 	"output-config": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "output-config.effort",
-			Usage:      "All possible effort levels.",
+			Usage:      "How much effort the model should put into its response. Higher effort levels may result in more thorough analysis but take longer.\n\nValid values are `low`, `medium`, `high`, `xhigh`, or `max`.",
 			InnerField: "effort",
 		},
 		&requestflag.InnerFlag[map[string]any]{

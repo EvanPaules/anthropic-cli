@@ -97,7 +97,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "speed",
-			Usage:    "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Not all models support `fast`; invalid combinations are rejected at create time.",
+			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.",
 			BodyPath: "speed",
 		},
 		&requestflag.Flag[[]string]{
@@ -283,7 +283,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 	"output-config": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "output-config.effort",
-			Usage:      "All possible effort levels.",
+			Usage:      "How much effort the model should put into its response. Higher effort levels may result in more thorough analysis but take longer.\n\nValid values are `low`, `medium`, `high`, `xhigh`, or `max`.",
 			InnerField: "effort",
 		},
 		&requestflag.InnerFlag[map[string]any]{
@@ -540,7 +540,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "speed",
-			Usage:    "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Not all models support `fast`; invalid combinations are rejected at create time.",
+			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.",
 			BodyPath: "speed",
 		},
 		&requestflag.Flag[any]{
@@ -660,7 +660,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 	"output-config": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "output-config.effort",
-			Usage:      "All possible effort levels.",
+			Usage:      "How much effort the model should put into its response. Higher effort levels may result in more thorough analysis but take longer.\n\nValid values are `low`, `medium`, `high`, `xhigh`, or `max`.",
 			InnerField: "effort",
 		},
 		&requestflag.InnerFlag[map[string]any]{
