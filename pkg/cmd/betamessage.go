@@ -311,7 +311,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 	"thinking": {
 		&requestflag.InnerFlag[string]{
 			Name:       "thinking.type",
-			Usage:      `Allowed values: "enabled", "disabled", "adaptive".`,
+			Usage:      `Allowed values: "enabled", "disabled", "between_tools", "adaptive".`,
 			InnerField: "type",
 		},
 		&requestflag.InnerFlag[map[string]any]{
@@ -688,7 +688,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 	"thinking": {
 		&requestflag.InnerFlag[string]{
 			Name:       "thinking.type",
-			Usage:      `Allowed values: "enabled", "disabled", "adaptive".`,
+			Usage:      `Allowed values: "enabled", "disabled", "between_tools", "adaptive".`,
 			InnerField: "type",
 		},
 		&requestflag.InnerFlag[map[string]any]{
