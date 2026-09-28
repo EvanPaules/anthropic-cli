@@ -637,6 +637,59 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:organization:plugins",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationPluginsCreate,
+					&betaOrganizationPluginsRetrieve,
+					&betaOrganizationPluginsUpdate,
+					&betaOrganizationPluginsList,
+					&betaOrganizationPluginsDelete,
+				},
+			},
+			{
+				Name:     "beta:organization:plugins:versions",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationPluginsVersionsCreate,
+					&betaOrganizationPluginsVersionsRetrieve,
+					&betaOrganizationPluginsVersionsList,
+					&betaOrganizationPluginsVersionsDownload,
+				},
+			},
+			{
+				Name:     "beta:organization:plugins:installation-settings",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationPluginsInstallationSettingsList,
+					&betaOrganizationPluginsInstallationSettingsRemove,
+					&betaOrganizationPluginsInstallationSettingsSet,
+				},
+			},
+			{
+				Name:     "beta:organization:plugins:shares",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationPluginsSharesList,
+				},
+			},
+			{
+				Name:     "beta:organization:plugin-marketplaces",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationPluginMarketplacesRetrieve,
+					&betaOrganizationPluginMarketplacesUpdate,
+					&betaOrganizationPluginMarketplacesList,
+					&betaOrganizationPluginMarketplacesValidateArchive,
+					&betaOrganizationPluginMarketplacesValidateRepository,
+				},
+			},
+			{
 				Name:            "@manpages",
 				Usage:           "Generate documentation for 'man'",
 				UsageText:       "ant @manpages [-o ant.1] [--gzip]",
