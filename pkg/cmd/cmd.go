@@ -871,11 +871,27 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:organization:analytics:user-usage-report",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsUserUsageReportList,
+				},
+			},
+			{
 				Name:     "beta:organization:analytics:cost-report",
 				Category: "API RESOURCE",
 				Suggest:  true,
 				Commands: []*cli.Command{
 					&betaOrganizationAnalyticsCostReportList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:user-cost-report",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsUserCostReportList,
 				},
 			},
 			{
