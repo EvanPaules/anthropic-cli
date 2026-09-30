@@ -900,6 +900,7 @@ func init() {
 				Suggest:  true,
 				Commands: []*cli.Command{
 					&betaOrganizationSpendLimitsRetrieve,
+					&betaOrganizationSpendLimitsList,
 					&betaOrganizationSpendLimitsDelete,
 					&betaOrganizationSpendLimitsSet,
 				},

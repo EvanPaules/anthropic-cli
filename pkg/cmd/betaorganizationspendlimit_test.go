@@ -17,6 +17,21 @@ func TestBetaOrganizationSpendLimitsRetrieve(t *testing.T) {
 	})
 }
 
+func TestBetaOrganizationSpendLimitsList(t *testing.T) {
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"beta:organization:spend-limits", "list",
+			"--max-items", "10",
+			"--limit", "1",
+			"--page", "page",
+			"--scope-type", "organization",
+			"--beta", "message-batches-2024-09-24",
+		)
+	})
+}
+
 func TestBetaOrganizationSpendLimitsDelete(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(

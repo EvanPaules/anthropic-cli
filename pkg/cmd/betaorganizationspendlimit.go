@@ -28,6 +28,41 @@ var betaOrganizationSpendLimitsRetrieve = cli.Command{
 	HideHelpCommand: true,
 }
 
+var betaOrganizationSpendLimitsList = cli.Command{
+	Name:    "list",
+	Usage:   "List the organization's spend limits.",
+	Suggest: true,
+	Flags: []cli.Flag{
+		&requestflag.Flag[int64]{
+			Name:      "limit",
+			Usage:     "Maximum number of limits per page. Defaults to `20`.",
+			Default:   20,
+			QueryPath: "limit",
+		},
+		&requestflag.Flag[string]{
+			Name:      "page",
+			Usage:     "Opaque cursor from a previous response's `next_page` field.",
+			QueryPath: "page",
+		},
+		&requestflag.Flag[[]string]{
+			Name:      "scope-type",
+			Usage:     "Return only limits with these scope types. A Claude Console organization has `organization` and `workspace` limits; a Claude Enterprise organization has `organization`, `seat_tier`, `rbac_group`, `organization_service` and `user` limits. Omit for all.",
+			QueryPath: "scope_type",
+		},
+		&requestflag.Flag[[]string]{
+			Name:       "beta",
+			Usage:      "This endpoint is in beta: requests must send `spend-limit-reads-2026-09-26` in this header.",
+			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[int64]{
+			Name:  "max-items",
+			Usage: "The maximum number of items to return (use -1 for unlimited).",
+		},
+	},
+	Action:          handleBetaOrganizationSpendLimitsList,
+	HideHelpCommand: true,
+}
+
 var betaOrganizationSpendLimitsDelete = cli.Command{
 	Name:    "delete",
 	Usage:   "Delete a spend limit.",
@@ -132,6 +167,64 @@ func handleBetaOrganizationSpendLimitsRetrieve(ctx context.Context, cmd *cli.Com
 		Title:          "beta:organization:spend-limits retrieve",
 		Transform:      transform,
 	})
+}
+
+func handleBetaOrganizationSpendLimitsList(ctx context.Context, cmd *cli.Command) error {
+	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
+	unusedArgs := cmd.Args().Slice()
+
+	if len(unusedArgs) > 0 {
+		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
+	}
+
+	options, err := flagOptions(
+		cmd,
+		apiquery.NestedQueryFormatBrackets,
+		apiquery.ArrayQueryFormatBrackets,
+		EmptyBody,
+		false,
+	)
+	if err != nil {
+		return err
+	}
+
+	params := anthropic.BetaOrganizationSpendLimitListParams{}
+
+	format := "explore"
+	explicitFormat := cmd.Root().IsSet("format")
+	if explicitFormat {
+		format = cmd.Root().String("format")
+	}
+	transform := cmd.Root().String("transform")
+	if format == "raw" {
+		var res []byte
+		options = append(options, option.WithResponseBodyInto(&res))
+		_, err = client.Beta.Organization.SpendLimits.List(ctx, params, options...)
+		if err != nil {
+			return err
+		}
+		obj := gjson.ParseBytes(res)
+		return ShowJSON(obj, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
+			Title:          "beta:organization:spend-limits list",
+			Transform:      transform,
+		})
+	} else {
+		iter := client.Beta.Organization.SpendLimits.ListAutoPaging(ctx, params, options...)
+		maxItems := int64(-1)
+		if cmd.IsSet("max-items") {
+			maxItems = cmd.Value("max-items").(int64)
+		}
+		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
+			Title:          "beta:organization:spend-limits list",
+			Transform:      transform,
+		})
+	}
 }
 
 func handleBetaOrganizationSpendLimitsDelete(ctx context.Context, cmd *cli.Command) error {
