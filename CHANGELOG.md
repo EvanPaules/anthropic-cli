@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.37.0 (2026-09-30)
+
+Full Changelog: [v1.36.0...v1.37.0](https://github.com/anthropics/anthropic-cli/compare/v1.36.0...v1.37.0)
+
+### Features
+
+* **api:** add Claude Enterprise analytics, spend limits, and RBAC groups and roles to the Admin API ([141981a](https://github.com/anthropics/anthropic-cli/commit/141981ab5659111e1e70fd479c7f4fa4edb84f67))
+* **api:** add per-user usage and cost reports to the Admin API analytics ([1ef485b](https://github.com/anthropics/anthropic-cli/commit/1ef485b54a62ef30eafee37dcb5a76a431344bc9))
+* **api:** add Plugins and Plugin Marketplaces to the Admin API ([a988455](https://github.com/anthropics/anthropic-cli/commit/a988455d725147df0f9a4652486a0e6b9f55ed42))
+* **api:** allow removing a plugin's org-wide installation setting ([e68aebc](https://github.com/anthropics/anthropic-cli/commit/e68aebc39a73e0cd96aab11208d2e83394b4ebf5))
+* **api:** Organization API endpoints are now GA ([a96980c](https://github.com/anthropics/anthropic-cli/commit/a96980c82bb0309f0c49ba35cba20e558720e5e3))
+
 ## 1.36.0 (2026-09-28)
 
 Full Changelog: [v1.35.0...v1.36.0](https://github.com/anthropics/anthropic-cli/compare/v1.35.0...v1.36.0)
