@@ -60,7 +60,7 @@ var betaOrganizationPluginsInstallationSettingsList = cli.Command{
 
 var betaOrganizationPluginsInstallationSettingsRemove = cli.Command{
 	Name:    "remove",
-	Usage:   "Remove one RBAC Group's own installation setting for an organization-owned\nPlugin, so that the group's members fall back to the Plugin's organization-wide\nsetting or to the settings of their other groups.",
+	Usage:   "Remove an organization-owned Plugin's own installation setting for the whole\norganization or for one RBAC Group.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -71,7 +71,7 @@ var betaOrganizationPluginsInstallationSettingsRemove = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "target",
-			Usage:     "The RBAC Group (ID prefixed `rbac_group_`) whose own setting is removed. The literal `organization` is refused with a 400: an organization-wide setting cannot be removed.",
+			Usage:     "The target whose own setting is removed: the literal `organization` for the Plugin's organization-wide setting, or an RBAC Group's ID (prefixed `rbac_group_`) for that group's own setting. Removing the `organization` setting returns the Plugin to its marketplace's default.",
 			Required:  true,
 			PathParam: "target",
 		},
