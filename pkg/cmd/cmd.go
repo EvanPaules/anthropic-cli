@@ -807,6 +807,146 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:organization:analytics:summaries",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsSummariesList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:users",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsUsersList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:apps:chat:projects",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsAppsChatProjectsList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:connectors",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsConnectorsList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:plugins",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsPluginsList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:skills",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsSkillsList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:artifacts",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsArtifactsList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:usage-report",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsUsageReportList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:cost-report",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsCostReportList,
+				},
+			},
+			{
+				Name:     "beta:organization:spend-limits",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationSpendLimitsRetrieve,
+					&betaOrganizationSpendLimitsDelete,
+					&betaOrganizationSpendLimitsSet,
+				},
+			},
+			{
+				Name:     "beta:organization:spend-limits:effective",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationSpendLimitsEffectiveList,
+				},
+			},
+			{
+				Name:     "beta:organization:spend-limits:increase-requests",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationSpendLimitsIncreaseRequestsRetrieve,
+					&betaOrganizationSpendLimitsIncreaseRequestsList,
+					&betaOrganizationSpendLimitsIncreaseRequestsApprove,
+					&betaOrganizationSpendLimitsIncreaseRequestsDeny,
+				},
+			},
+			{
+				Name:     "beta:organization:rbac-groups",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationRBACGroupsCreate,
+					&betaOrganizationRBACGroupsRetrieve,
+					&betaOrganizationRBACGroupsUpdate,
+					&betaOrganizationRBACGroupsList,
+					&betaOrganizationRBACGroupsDelete,
+				},
+			},
+			{
+				Name:     "beta:organization:rbac-groups:members",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationRBACGroupsMembersList,
+					&betaOrganizationRBACGroupsMembersAdd,
+					&betaOrganizationRBACGroupsMembersRemove,
+				},
+			},
+			{
+				Name:     "beta:organization:rbac-roles",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationRBACRolesRetrieve,
+					&betaOrganizationRBACRolesList,
+				},
+			},
+			{
+				Name:     "beta:organization:rbac-roles:permissions",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationRBACRolesPermissionsList,
+				},
+			},
+			{
 				Name:     "beta:organization:plugins",
 				Category: "API RESOURCE",
 				Suggest:  true,
