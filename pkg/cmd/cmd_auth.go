@@ -127,7 +127,7 @@ func init() {
 					},
 					&cli.StringFlag{
 						Name:  "workspace-id",
-						Usage: "Workspace to bind the access token to (optional). If omitted, Console shows a workspace picker after org selection. Find IDs under Settings → Workspaces in the Console (resolved from --console-url / profile / default).",
+						Usage: "Workspace to bind the access token to (optional). If omitted, Console may show a workspace picker after org selection; login also succeeds with no workspace bound. Find IDs under Settings → Workspaces in the Console (resolved from --console-url / profile / default).",
 					},
 					&cli.BoolFlag{
 						Name:  "debug",
@@ -210,9 +210,10 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 	consoleURL := resolveConsoleURL(c.String("console-url"), prev)
 	baseURL := resolveBaseURL(c.String("base-url"), prev)
 	workspaceID := resolveWorkspaceID(c.String("workspace-id"), prev)
-	// workspaceID may be empty here — Console will show a workspace picker
-	// after the org selection step, and the resolved workspace comes back
-	// in the token response (tok.Workspace.ID).
+	// workspaceID may be empty here — Console may show a workspace picker
+	// after the org selection step, in which case the resolved workspace
+	// comes back in the token response (tok.Workspace.ID). A token with no
+	// workspace binding at all is also valid.
 
 	verifier, err := randomURLSafeString(64)
 	if err != nil {
@@ -403,15 +404,12 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 	// Effective workspace: prefer what the token is actually bound to (the
 	// authoritative source — backend mints the token against this), fall
 	// back to the flag value when the token response omits it (older
-	// backend that doesn't yet emit the workspace block).
+	// backend that doesn't yet emit the workspace block). Empty is valid —
+	// the profile then carries no workspace_id and requests send no
+	// anthropic-workspace-id header.
 	effectiveWorkspaceID := tok.Workspace.ID
 	if effectiveWorkspaceID == "" {
 		effectiveWorkspaceID = workspaceID
-	}
-	if effectiveWorkspaceID == "" {
-		return fmt.Errorf("no workspace bound to the issued token. " +
-			"Pass --workspace-id, set workspace_id on the profile, " +
-			"or pick a workspace in the Console consent page.")
 	}
 
 	if bootstrapping {
@@ -494,7 +492,7 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 	if data, err := os.ReadFile(config.ActiveConfigPath(dir)); err == nil {
 		prevActive = strings.TrimSpace(string(data))
 	}
-	wantActivate := c.IsSet("profile") || prevActive == ""
+	wantActivate := c.Root().IsSet("profile") || prevActive == ""
 	activated := false
 	if wantActivate && prevActive != profile {
 		if err := config.SetActiveProfile(dir, profile); err != nil {
@@ -510,6 +508,16 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 	}
 	if tok.Organization.UUID != "" {
 		fmt.Fprintf(os.Stderr, "  organization: %s (%s)\n", tok.Organization.Name, tok.Organization.UUID)
+	}
+	switch {
+	case effectiveWorkspaceID == "":
+		fmt.Fprintf(os.Stderr,
+			"  workspace:    (none) — to target one: ant profile set workspace_id <id> --profile %s, or pass --workspace-id per command\n",
+			profile)
+	case tok.Workspace.Name != "":
+		fmt.Fprintf(os.Stderr, "  workspace:    %q (%s)\n", tok.Workspace.Name, effectiveWorkspaceID)
+	default:
+		fmt.Fprintf(os.Stderr, "  workspace:    %s\n", effectiveWorkspaceID)
 	}
 	if activated {
 		if prevActive == "" {
@@ -637,6 +645,10 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 	profileTokenPresent := cfgErr == nil && cfg != nil && credsErr == nil && creds.AccessToken != ""
 
 	root := c.Root()
+	warnIfCredentialOnCommandLine(os.Stderr)
+	if err := applyStdinCredential(root); err != nil {
+		return err
+	}
 	apiKeySet := root.IsSet("api-key")
 	authTokenSet := root.IsSet("auth-token")
 	fed := federationFromRoot(root)
@@ -682,10 +694,10 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 		fmt.Fprintln(out, "  (no credential configured — set ANTHROPIC_API_KEY or run `ant auth login`)")
 	}
 	if apiKeySet {
-		writeRow(out, credWinner == 1, "--api-key / ANTHROPIC_API_KEY", formatSecret(root.String("api-key"), true))
+		writeRow(out, credWinner == 1, credentialSourceLabel(root, "api-key"), formatSecret(root.String("api-key"), true))
 	}
 	if authTokenSet {
-		writeRow(out, credWinner == 2, "--auth-token / ANTHROPIC_AUTH_TOKEN", formatSecret(root.String("auth-token"), true))
+		writeRow(out, credWinner == 2, credentialSourceLabel(root, "auth-token"), formatSecret(root.String("auth-token"), true))
 	}
 	if profileTokenPresent {
 		authType := "unknown"
@@ -740,14 +752,19 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 	// Surface the surprising-override case: the user ran `ant auth login` but
 	// has a credential env var set that silently beats the profile on every
 	// request.
-	if profileTokenPresent && (apiKeySet || authTokenSet) {
-		overrideEnv := "ANTHROPIC_API_KEY"
-		if !apiKeySet {
-			overrideEnv = "ANTHROPIC_AUTH_TOKEN"
-		}
+	// A credential piped via --api-key-stdin / --auth-token-stdin is a
+	// per-invocation choice, not an ambient override, so it doesn't warn.
+	envOverride := ""
+	switch {
+	case apiKeySet && !credentialFromStdin(root, "api-key"):
+		envOverride = "ANTHROPIC_API_KEY"
+	case !apiKeySet && authTokenSet && !credentialFromStdin(root, "auth-token"):
+		envOverride = "ANTHROPIC_AUTH_TOKEN"
+	}
+	if profileTokenPresent && envOverride != "" {
 		fmt.Fprintln(out)
-		fmt.Fprintf(out, "⚠  %s is set in your environment and overrides the logged-in profile.\n", overrideEnv)
-		fmt.Fprintf(out, "   Unset it to use the profile:  unset %s\n", overrideEnv)
+		fmt.Fprintf(out, "⚠  %s is set in your environment and overrides the logged-in profile.\n", envOverride)
+		fmt.Fprintf(out, "   Unset it to use the profile:  unset %s\n", envOverride)
 	}
 
 	// Surface partial federation config: the user set some federation inputs
@@ -830,26 +847,42 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 	// The credentials file's workspace_id is what the token is actually
 	// bound to (set at mint time); the profile's workspace_id is user
 	// intent. Show both when they diverge so silent drift is visible.
+	// --workspace-id / ANTHROPIC_WORKSPACE_ID is appended last in
+	// getDefaultRequestOptions, so it wins over both for the header.
 	credsWs := creds.WorkspaceID
 	credsWsName := creds.WorkspaceName
+	wsFromFlag := root.IsSet("workspace-id") && root.String("workspace-id") != ""
+	if wsFromFlag {
+		writeRow(out, true, "--workspace-id / ANTHROPIC_WORKSPACE_ID", root.String("workspace-id"))
+	}
 	switch {
+	case wsFromFlag:
+		if credsWs != "" {
+			credsLabel := credsWs
+			if credsWsName != "" {
+				credsLabel = fmt.Sprintf("%s (%q)", credsWs, credsWsName)
+			}
+			writeRow(out, false, "Active token workspace", credsLabel)
+		} else if profileWs != "" {
+			writeRow(out, false, "Profile workspace_id", profileWs)
+		}
 	case credsWs != "" && profileWs != "" && credsWs == profileWs:
 		label := credsWs
 		if credsWsName != "" {
-			label = fmt.Sprintf("%s (%s)", credsWs, credsWsName)
+			label = fmt.Sprintf("%s (%q)", credsWs, credsWsName)
 		}
 		writeRow(out, true, "Workspace", label)
 	case credsWs != "" && profileWs != "" && credsWs != profileWs:
 		writeRow(out, false, "Profile workspace_id", profileWs)
 		credsLabel := credsWs
 		if credsWsName != "" {
-			credsLabel = fmt.Sprintf("%s (%s)", credsWs, credsWsName)
+			credsLabel = fmt.Sprintf("%s (%q)", credsWs, credsWsName)
 		}
 		writeRow(out, true, "Active token workspace", credsLabel+" — drift, re-login to reconcile")
 	case credsWs != "":
 		credsLabel := credsWs
 		if credsWsName != "" {
-			credsLabel = fmt.Sprintf("%s (%s)", credsWs, credsWsName)
+			credsLabel = fmt.Sprintf("%s (%q)", credsWs, credsWsName)
 		}
 		writeRow(out, true, "Active token workspace", credsLabel)
 	case profileWs != "":
@@ -902,8 +935,8 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 // that pass a Command not yet Run() (or nil).
 func activeProfileWithSource(c *cli.Command, dir string) (profile, source string) {
 	const explicitSrc = "from --profile / ANTHROPIC_PROFILE"
-	if c != nil && c.IsSet("profile") {
-		return c.String("profile"), explicitSrc
+	if c != nil && c.Root().IsSet("profile") {
+		return c.Root().String("profile"), explicitSrc
 	}
 	if p, ok := os.LookupEnv("ANTHROPIC_PROFILE"); ok {
 		return p, explicitSrc

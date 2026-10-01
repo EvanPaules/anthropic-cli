@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -21,7 +19,7 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[map[string]any]{
 			Name:     "model",
-			Usage:    "Model identifier. Accepts the [model string](https://platform.claude.com/docs/en/about-claude/models/overview#latest-models-comparison), e.g. `claude-opus-4-6`, or a `model_config` object for additional configuration control",
+			Usage:    "Model identifier. Accepts the [model string](https://platform.claude.com/docs/en/about-claude/models/overview#latest-models-comparison), e.g. `claude-opus-5`, or a `model_config` object for additional configuration control",
 			Required: true,
 			BodyPath: "model",
 		},
@@ -48,7 +46,7 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "multiagent",
-			Usage:    "A coordinator topology: the session's primary thread orchestrates work by spawning session threads, each running an agent drawn from the `agents` roster.",
+			Usage:    "Multiagent orchestration configuration. Currently supports the `coordinator` topology.",
 			BodyPath: "multiagent",
 		},
 		&requestflag.Flag[[]map[string]any]{
@@ -71,10 +69,36 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaAgentsCreate,
 	HideHelpCommand: true,
 }, map[string][]requestflag.HasOuterFlag{
+	"model": {
+		&requestflag.InnerFlag[string]{
+			Name:       "model.id",
+			Usage:      "The model that will power your agent.\n\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
+			InnerField: "id",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "model.effort",
+			InnerField: "effort",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "model.inference-geo",
+			Usage:      "Geographic region for model inference. When unset, requests fall through to the workspace's default_inference_geo. On update, `model` is whole-object replacement — omitting inference_geo clears it.",
+			InnerField: "inference_geo",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "model.speed",
+			Usage:      "Inference speed mode. Defaults to `standard`.",
+			InnerField: "speed",
+		},
+	},
 	"mcp-server": {
 		&requestflag.InnerFlag[string]{
 			Name:       "mcp-server.name",
@@ -104,6 +128,58 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 			InnerField: "type",
 		},
 	},
+	"skill": {
+		&requestflag.InnerFlag[string]{
+			Name:       "skill.skill-id",
+			Usage:      `Identifier of the Anthropic skill (e.g., "xlsx").`,
+			InnerField: "skill_id",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "skill.type",
+			Usage:      `Allowed values: "anthropic", "custom".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "skill.version",
+			Usage:      "Version to pin. Defaults to latest if omitted.",
+			InnerField: "version",
+		},
+	},
+	"tool": {
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.type",
+			Usage:      `Allowed values: "agent_toolset_20260401", "mcp_toolset", "custom".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.configs",
+			InnerField: "configs",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.default-config",
+			InnerField: "default_config",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.description",
+			Usage:      "Description of what the tool does, shown to the agent to help it decide when to use the tool.",
+			InnerField: "description",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.input-schema",
+			Usage:      "JSON Schema for custom tool input parameters.",
+			InnerField: "input_schema",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.mcp-server-name",
+			Usage:      "Name of the MCP server. Must match a server name from the mcp_servers array. 1-255 characters.",
+			InnerField: "mcp_server_name",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.name",
+			Usage:      "Unique name for the tool. 1-128 characters; letters, digits, underscores, and hyphens.",
+			InnerField: "name",
+		},
+	},
 })
 
 var betaAgentsRetrieve = cli.Command{
@@ -113,6 +189,7 @@ var betaAgentsRetrieve = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "agent-id",
+			Usage:     "Unique identifier of the agent to retrieve.",
 			Required:  true,
 			PathParam: "agent_id",
 		},
@@ -126,6 +203,11 @@ var betaAgentsRetrieve = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaAgentsRetrieve,
 	HideHelpCommand: true,
@@ -138,15 +220,10 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:        "agent-id",
+			Usage:       "Unique identifier of the agent to update.",
 			Required:    true,
 			PathParam:   "agent_id",
 			DataAliases: []string{"id"},
-		},
-		&requestflag.Flag[int64]{
-			Name:     "version",
-			Usage:    "The agent's current version, used to prevent concurrent overwrites. Obtain this value from a create or retrieve response. The request fails if this does not match the server's current version.",
-			Required: true,
-			BodyPath: "version",
 		},
 		&requestflag.Flag[*string]{
 			Name:     "description",
@@ -165,12 +242,12 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "model",
-			Usage:    "Model identifier. Accepts the [model string](https://platform.claude.com/docs/en/about-claude/models/overview#latest-models-comparison), e.g. `claude-opus-4-6`, or a `model_config` object for additional configuration control. Omit to preserve. Cannot be cleared.",
+			Usage:    "Model identifier. Accepts the [model string](https://platform.claude.com/docs/en/about-claude/models/overview#latest-models-comparison), e.g. `claude-opus-5`, or a `model_config` object for additional configuration control. Omit to preserve. Cannot be cleared.",
 			BodyPath: "model",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "multiagent",
-			Usage:    "A coordinator topology: the session's primary thread orchestrates work by spawning session threads, each running an agent drawn from the `agents` roster.",
+			Usage:    "Multiagent orchestration configuration. Currently supports the `coordinator` topology.",
 			BodyPath: "multiagent",
 		},
 		&requestflag.Flag[string]{
@@ -193,10 +270,20 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Tool configurations available to the agent. Full replacement. Omit to preserve; send empty array or null to clear. Maximum of 128 tools across all toolsets allowed.",
 			BodyPath: "tools",
 		},
+		&requestflag.Flag[int64]{
+			Name:     "version",
+			Usage:    "The agent's current version, used to prevent concurrent overwrites. Obtain this value from a create or retrieve response. Must be at least 1 if specified. When supplied, the request fails if it does not match the server's current version; omit to apply the update unconditionally.",
+			BodyPath: "version",
+		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaAgentsUpdate,
@@ -222,6 +309,27 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			OuterIsArrayOfObjects: true,
 		},
 	},
+	"model": {
+		&requestflag.InnerFlag[string]{
+			Name:       "model.id",
+			Usage:      "The model that will power your agent.\n\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
+			InnerField: "id",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "model.effort",
+			InnerField: "effort",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "model.inference-geo",
+			Usage:      "Geographic region for model inference. When unset, requests fall through to the workspace's default_inference_geo. On update, `model` is whole-object replacement — omitting inference_geo clears it.",
+			InnerField: "inference_geo",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "model.speed",
+			Usage:      "Inference speed mode. Defaults to `standard`.",
+			InnerField: "speed",
+		},
+	},
 	"multiagent": {
 		&requestflag.InnerFlag[[]any]{
 			Name:       "multiagent.agents",
@@ -232,6 +340,68 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "multiagent.type",
 			Usage:      `Allowed values: "coordinator".`,
 			InnerField: "type",
+		},
+	},
+	"skill": {
+		&requestflag.InnerFlag[string]{
+			Name:                  "skill.skill-id",
+			Usage:                 `Identifier of the Anthropic skill (e.g., "xlsx").`,
+			InnerField:            "skill_id",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[string]{
+			Name:                  "skill.type",
+			Usage:                 `Allowed values: "anthropic", "custom".`,
+			InnerField:            "type",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:                  "skill.version",
+			Usage:                 "Version to pin. Defaults to latest if omitted.",
+			InnerField:            "version",
+			OuterIsArrayOfObjects: true,
+		},
+	},
+	"tool": {
+		&requestflag.InnerFlag[string]{
+			Name:                  "tool.type",
+			Usage:                 `Allowed values: "agent_toolset_20260401", "mcp_toolset", "custom".`,
+			InnerField:            "type",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[any]{
+			Name:                  "tool.configs",
+			InnerField:            "configs",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[any]{
+			Name:                  "tool.default-config",
+			InnerField:            "default_config",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[string]{
+			Name:                  "tool.description",
+			Usage:                 "Description of what the tool does, shown to the agent to help it decide when to use the tool.",
+			InnerField:            "description",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:                  "tool.input-schema",
+			Usage:                 "JSON Schema for custom tool input parameters.",
+			InnerField:            "input_schema",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[string]{
+			Name:                  "tool.mcp-server-name",
+			Usage:                 "Name of the MCP server. Must match a server name from the mcp_servers array. 1-255 characters.",
+			InnerField:            "mcp_server_name",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[string]{
+			Name:                  "tool.name",
+			Usage:                 "Unique name for the tool. 1-128 characters; letters, digits, underscores, and hyphens.",
+			InnerField:            "name",
+			OuterIsArrayOfObjects: true,
 		},
 	},
 })
@@ -271,6 +441,11 @@ var betaAgentsList = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
@@ -287,6 +462,7 @@ var betaAgentsArchive = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "agent-id",
+			Usage:     "Unique identifier of the agent to archive.",
 			Required:  true,
 			PathParam: "agent_id",
 		},
@@ -294,6 +470,11 @@ var betaAgentsArchive = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaAgentsArchive,

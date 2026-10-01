@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -21,6 +19,7 @@ var betaDeploymentRunsRetrieve = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "deployment-run-id",
+			Usage:     "Unique identifier of the deployment run.",
 			Required:  true,
 			PathParam: "deployment_run_id",
 		},
@@ -28,6 +27,11 @@ var betaDeploymentRunsRetrieve = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaDeploymentRunsRetrieve,
@@ -61,12 +65,12 @@ var betaDeploymentRunsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "deployment-id",
-			Usage:     "Filter to a specific deployment. Omit to list across all deployments in the workspace. Filtering by a non-existent deployment_id returns 200 with empty data.",
+			Usage:     "Filter to a specific deployment. Omit to list across all deployments in the workspace. Filtering by a non-existent `deployment_id` returns 200 with empty data.",
 			QueryPath: "deployment_id",
 		},
 		&requestflag.Flag[bool]{
 			Name:      "has-error",
-			Usage:     "Filter: true for runs with non-null error, false for runs with non-null session_id. Omit for all.",
+			Usage:     "Filter: true for runs with non-null `error`, false for runs with non-null `session_id`. Omit for all.",
 			QueryPath: "has_error",
 		},
 		&requestflag.Flag[int64]{
@@ -76,7 +80,7 @@ var betaDeploymentRunsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "page",
-			Usage:     "Opaque pagination cursor. Pass next_page from the previous response. Invalid or expired cursors return 400.",
+			Usage:     "Opaque pagination cursor. Pass `next_page` from the previous response. Invalid or expired cursors return 400.",
 			QueryPath: "page",
 		},
 		&requestflag.Flag[string]{
@@ -88,6 +92,11 @@ var betaDeploymentRunsList = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",

@@ -14,6 +14,10 @@ on:
       - 'stl-preview-head/**'
       - 'stl-preview-base/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.sha || github.ref }}
+  cancel-in-progress: true
+
 env:
   GOPRIVATE: github.com/anthropics/anthropic-sdk-go,github.com/anthropics/anthropic-sdk-go-private
 
@@ -21,22 +25,23 @@ jobs:
   lint:
     timeout-minutes: 10
     name: lint
-    runs-on: 'ubuntu-latest'
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.fork)
+    runs-on: ${{ github.repository == 'anthropics/anthropic-cli' && 'ubuntu-latest' || 'ubuntu-latest-16-core' }}
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - uses: ./.github/actions/setup-go
         with:
-          stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
+          app-id: ${{ vars.GO_PRIVATE_READER_APP_ID }}
+          private-key: ${{ secrets.GO_PRIVATE_READER_PRIVATE_KEY }}
 
       - name: Link staging branch
         if: github.repository == 'anthropics/anthropic-sdk-cli-private'
         env:
           REF_NAME: ${{ github.ref_name }}
         run: |
-          ./scripts/link 'github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
+          ./scripts/link "github.com/anthropics/anthropic-sdk-go-private@${REF_NAME}" || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap
@@ -45,37 +50,55 @@ jobs:
         run: ./scripts/lint
 
   build:
-    timeout-minutes: 10
+    timeout-minutes: 15
     name: build
     permissions:
       contents: read
       id-token: write
-    runs-on: 'ubuntu-latest'
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.fork)
+    runs-on: ${{ github.repository == 'anthropics/anthropic-cli' && 'ubuntu-latest' || 'ubuntu-latest-16-core' }}
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - uses: ./.github/actions/setup-go
         with:
-          stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
+          app-id: ${{ vars.GO_PRIVATE_READER_APP_ID }}
+          private-key: ${{ secrets.GO_PRIVATE_READER_PRIVATE_KEY }}
 
       - name: Link staging branch
         if: github.repository == 'anthropics/anthropic-sdk-cli-private'
         env:
           REF_NAME: ${{ github.ref_name }}
         run: |
-          ./scripts/link 'github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
+          ./scripts/link "github.com/anthropics/anthropic-sdk-go-private@${REF_NAME}" || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap
+
+      # Keyed by run id so every run saves a fresh cache and restores the newest one visible to its branch.
+      - name: Cache Go build
+        uses: actions/cache@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
+        with:
+          path: ${{ runner.temp }}/go-build-cache
+          key: ${{ runner.os }}-cli-go-build-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-cli-go-build-
 
       - name: Run goreleaser
         uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7.0.0
         with:
           version: "2.15.2"
-          args: release --snapshot --clean --skip=publish
+          args: build --snapshot --clean --id macos --id linux --id windows
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Kept apart from the default GOCACHE so setup-go's go.sum-keyed cache never picks up compile output.
+          GOCACHE: ${{ runner.temp }}/go-build-cache
+
+      # Go bumps the mtime of entries it reuses, so this keeps only what this build used and bounds the saved cache.
+      - name: Prune Go build cache
+        shell: bash
+        env:
+          GOCACHE: ${{ runner.temp }}/go-build-cache
+        run: find "$GOCACHE" -mindepth 2 -maxdepth 2 -mmin +90 -exec rm -rf {} +
 
       - name: Get GitHub OIDC Token
         if: |-
@@ -96,72 +119,73 @@ jobs:
           SHA: ${{ github.sha }}
         run: ./scripts/utils/upload-artifact.sh
 
-      - name: Upload cdp-darwin-arm64
+      - name: Upload ant-darwin-arm64
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: cdp-darwin-arm64
-          path: dist/macos_darwin_arm64*/cdp
+          name: ant-darwin-arm64
+          path: dist/macos_darwin_arm64*/ant
           retention-days: 90
           if-no-files-found: ignore
 
-      - name: Upload cdp-darwin-amd64
+      - name: Upload ant-darwin-amd64
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: cdp-darwin-amd64
-          path: dist/macos_darwin_amd64*/cdp
+          name: ant-darwin-amd64
+          path: dist/macos_darwin_amd64*/ant
           retention-days: 90
           if-no-files-found: ignore
 
-      - name: Upload cdp-linux-amd64
+      - name: Upload ant-linux-amd64
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: cdp-linux-amd64
-          path: dist/linux_linux_amd64*/cdp
+          name: ant-linux-amd64
+          path: dist/linux_linux_amd64*/ant
           retention-days: 90
           if-no-files-found: ignore
 
-      - name: Upload cdp-linux-arm64
+      - name: Upload ant-linux-arm64
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: cdp-linux-arm64
-          path: dist/linux_linux_arm64*/cdp
+          name: ant-linux-arm64
+          path: dist/linux_linux_arm64*/ant
           retention-days: 90
           if-no-files-found: ignore
 
-      - name: Upload cdp-windows-amd64
+      - name: Upload ant-windows-amd64
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: cdp-windows-amd64
-          path: dist/windows_windows_amd64*/cdp.exe
+          name: ant-windows-amd64
+          path: dist/windows_windows_amd64*/ant.exe
           retention-days: 90
           if-no-files-found: ignore
 
-      - name: Upload cdp-windows-arm64
+      - name: Upload ant-windows-arm64
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: cdp-windows-arm64
-          path: dist/windows_windows_arm64*/cdp.exe
+          name: ant-windows-arm64
+          path: dist/windows_windows_arm64*/ant.exe
           retention-days: 90
           if-no-files-found: ignore
 
   test:
     timeout-minutes: 20
     name: test
-    runs-on: 'ubuntu-latest'
+    runs-on: ${{ github.repository == 'anthropics/anthropic-cli' && 'ubuntu-latest' || 'ubuntu-latest-16-core' }}
     if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - uses: ./.github/actions/setup-go
         with:
-          stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
+          app-id: ${{ vars.GO_PRIVATE_READER_APP_ID }}
+          private-key: ${{ secrets.GO_PRIVATE_READER_PRIVATE_KEY }}
 
       - name: Link staging branch
         if: github.repository == 'anthropics/anthropic-sdk-cli-private'
         env:
           REF_NAME: ${{ github.ref_name }}
         run: |
-          ./scripts/link 'github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
+          ./scripts/link "github.com/anthropics/anthropic-sdk-go-private@${REF_NAME}" || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap

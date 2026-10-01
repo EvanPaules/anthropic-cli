@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -21,6 +19,7 @@ var betaMemoryStoresMemoriesCreate = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "memory-store-id",
+			Usage:     "The ID of the memory store to create the memory in (`memstore_...`).",
 			Required:  true,
 			PathParam: "memory_store_id",
 		},
@@ -32,7 +31,7 @@ var betaMemoryStoresMemoriesCreate = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "path",
-			Usage:    "Hierarchical path for the new memory, e.g. `/projects/foo/notes.md`. Must start with `/`, contain at least one non-empty segment, and be at most 1,024 bytes. Must not contain empty segments, `.` or `..` segments, control or format characters, and must be NFC-normalized. Paths are case-sensitive.",
+			Usage:    "Hierarchical path for the new memory, e.g. `/projects/foo/notes.md`. Must start with `/`, contain at least one non-empty segment, and be at most 1,024 bytes. Must not contain empty segments, `.` or `..` segments, control or format characters, or the Unicode line and paragraph separators (U+2028, U+2029), and must be NFC-normalized. Paths are case-sensitive.",
 			Required: true,
 			BodyPath: "path",
 		},
@@ -46,6 +45,11 @@ var betaMemoryStoresMemoriesCreate = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaMemoryStoresMemoriesCreate,
 	HideHelpCommand: true,
@@ -58,11 +62,13 @@ var betaMemoryStoresMemoriesRetrieve = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "memory-store-id",
+			Usage:     "The ID of the memory store that holds the memory (`memstore_...`).",
 			Required:  true,
 			PathParam: "memory_store_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "memory-id",
+			Usage:     "The ID of the memory to retrieve (`mem_...`).",
 			Required:  true,
 			PathParam: "memory_id",
 		},
@@ -76,6 +82,11 @@ var betaMemoryStoresMemoriesRetrieve = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaMemoryStoresMemoriesRetrieve,
 	HideHelpCommand: true,
@@ -88,11 +99,13 @@ var betaMemoryStoresMemoriesUpdate = requestflag.WithInnerFlags(cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "memory-store-id",
+			Usage:     "The ID of the memory store that holds the memory (`memstore_...`).",
 			Required:  true,
 			PathParam: "memory_store_id",
 		},
 		&requestflag.Flag[string]{
 			Name:        "memory-id",
+			Usage:       "The ID of the memory to update (`mem_...`).",
 			Required:    true,
 			PathParam:   "memory_id",
 			DataAliases: []string{"id"},
@@ -109,18 +122,23 @@ var betaMemoryStoresMemoriesUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "path",
-			Usage:    "New path for the memory (a rename). Must start with `/`, contain at least one non-empty segment, and be at most 1,024 bytes. Must not contain empty segments, `.` or `..` segments, control or format characters, and must be NFC-normalized. Paths are case-sensitive. The memory's `id` is preserved across renames. Omit to leave the path unchanged.",
+			Usage:    "New path for the memory (a rename). Must start with `/`, contain at least one non-empty segment, and be at most 1,024 bytes. Must not contain empty segments, `.` or `..` segments, control or format characters, or the Unicode line and paragraph separators (U+2028, U+2029), and must be NFC-normalized. Paths are case-sensitive. The memory's `id` is preserved across renames. Omit to leave the path unchanged.",
 			BodyPath: "path",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "precondition",
-			Usage:    "Optimistic-concurrency precondition: the update applies only if the memory's stored `content_sha256` equals the supplied value. On mismatch, the request returns `memory_precondition_failed_error` (HTTP 409); re-read the memory and retry against the fresh state. If the precondition fails but the stored state already exactly matches the requested `content` and `path`, the server returns 200 instead of 409.",
+			Usage:    "Optional condition that must hold for an update to apply. When omitted, the update is unconditional. Asserts the current state of the memory being updated. When an update changes `path`, the precondition still refers to the memory's current content, not the destination path. Currently the only supported variant is `content_sha256`.",
 			BodyPath: "precondition",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaMemoryStoresMemoriesUpdate,
@@ -147,6 +165,7 @@ var betaMemoryStoresMemoriesList = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "memory-store-id",
+			Usage:     "The ID of the memory store to list memories from (`memstore_...`).",
 			Required:  true,
 			PathParam: "memory_store_id",
 		},
@@ -180,6 +199,11 @@ var betaMemoryStoresMemoriesList = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
@@ -196,23 +220,30 @@ var betaMemoryStoresMemoriesDelete = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "memory-store-id",
+			Usage:     "The ID of the memory store that holds the memory (`memstore_...`).",
 			Required:  true,
 			PathParam: "memory_store_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "memory-id",
+			Usage:     "The ID of the memory to delete (`mem_...`).",
 			Required:  true,
 			PathParam: "memory_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "expected-content-sha256",
-			Usage:     "Query parameter for expected_content_sha256",
+			Usage:     "Delete the memory only if its current `content_sha256` equals this value, given as 64 lowercase hexadecimal characters. Omit it to delete unconditionally.\n\nIf the hashes differ, the request fails with HTTP status 409 and nothing is deleted.",
 			QueryPath: "expected_content_sha256",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaMemoryStoresMemoriesDelete,

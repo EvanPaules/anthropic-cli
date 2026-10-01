@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -17,6 +15,7 @@ func TestBetaEnvironmentsWorkRetrieve(t *testing.T) {
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--work-id", "work_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -31,6 +30,7 @@ func TestBetaEnvironmentsWorkUpdate(t *testing.T) {
 			"--work-id", "work_id",
 			"--metadata", "{foo: string}",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -46,12 +46,13 @@ func TestBetaEnvironmentsWorkUpdate(t *testing.T) {
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--work-id", "work_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
 
 func TestBetaEnvironmentsWorkList(t *testing.T) {
-	t.Skip("buildURL drops path-level query params (SDK-4349)")
+	t.Skip("buildURL drops path-level query params")
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
@@ -110,7 +111,7 @@ func TestBetaEnvironmentsWorkPoll(t *testing.T) {
 }
 
 func TestBetaEnvironmentsWorkStats(t *testing.T) {
-	t.Skip("buildURL drops path-level query params (SDK-4349)")
+	t.Skip("buildURL drops path-level query params")
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
@@ -118,6 +119,7 @@ func TestBetaEnvironmentsWorkStats(t *testing.T) {
 			"beta:environments:work", "stats",
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -132,6 +134,7 @@ func TestBetaEnvironmentsWorkStop(t *testing.T) {
 			"--work-id", "work_id",
 			"--force=true",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -145,6 +148,7 @@ func TestBetaEnvironmentsWorkStop(t *testing.T) {
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--work-id", "work_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

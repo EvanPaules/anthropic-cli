@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -17,14 +15,15 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"beta:messages", "create",
 			"--max-items", "10",
 			"--max-tokens", "1024",
-			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
-			"--model", "claude-opus-4-6",
+			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user, clear_at: next_user_message, output_config: {effort: low}}",
+			"--model", "claude-opus-5",
 			"--cache-control", "{type: ephemeral, ttl: 5m}",
+			"--compaction", "{type: summarize, instructions: instructions}",
 			"--container", "{id: id, skills: [{skill_id: pdf, type: anthropic, version: latest}]}",
 			"--context-management", "{edits: [{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]}",
 			"--diagnostics", "{previous_message_id: previous_message_id}",
 			"--fallback-credit-token", "x",
-			"--fallback", "[{model: claude-sonnet-5, max_tokens: 0, output_config: {effort: low, format: {schema: {foo: bar}, type: json_schema}, task_budget: {total: 1024, type: tokens, remaining: 0}}, speed: standard, thinking: {budget_tokens: 1024, type: enabled, display: summarized}}]",
+			"--fallbacks", "default",
 			"--inference-geo", "inference_geo",
 			"--mcp-server", "{name: name, type: url, url: url, authorization_token: authorization_token, tool_configuration: {allowed_tools: [string], enabled: true}}",
 			"--metadata", "{user_id: 13803d75-b4b5-4c3e-b2a2-6f21399b021b}",
@@ -34,15 +33,16 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--speed", "standard",
 			"--stop-sequence", "string",
 			"--stream=false",
-			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
+			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--temperature", "1",
-			"--thinking", "{type: adaptive, display: summarized}",
+			"--thinking", "{type: adaptive, block_binding: {prefix_mismatch_behavior: error}, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 			"--top-k", "5",
 			"--top-p", "0.7",
 			"--beta", "message-batches-2024-09-24",
 			"--user-profile-id", "anthropic-user-profile-id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -57,20 +57,20 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"beta:messages", "create",
 			"--max-items", "10",
 			"--max-tokens", "1024",
-			"--message.content", "[{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
+			"--message.content", "[{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--message.role", "user",
-			"--model", "claude-opus-4-6",
+			"--message.clear-at", "next_user_message",
+			"--message.output-config", "{effort: low}",
+			"--model", "claude-opus-5",
 			"--cache-control.type", "ephemeral",
 			"--cache-control.ttl", "5m",
+			"--compaction.type", "summarize",
+			"--compaction.instructions", "instructions",
 			"--container", "{id: id, skills: [{skill_id: pdf, type: anthropic, version: latest}]}",
 			"--context-management.edits", "[{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]",
 			"--diagnostics.previous-message-id", "previous_message_id",
 			"--fallback-credit-token", "x",
-			"--fallback.model", "claude-sonnet-5",
-			"--fallback.max-tokens", "0",
-			"--fallback.output-config", "{effort: low, format: {schema: {foo: bar}, type: json_schema}, task_budget: {total: 1024, type: tokens, remaining: 0}}",
-			"--fallback.speed", "standard",
-			"--fallback.thinking", "{budget_tokens: 1024, type: enabled, display: summarized}",
+			"--fallbacks", "default",
 			"--inference-geo", "inference_geo",
 			"--mcp-server.name", "name",
 			"--mcp-server.type", "url",
@@ -87,15 +87,16 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--speed", "standard",
 			"--stop-sequence", "string",
 			"--stream=false",
-			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
+			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--temperature", "1",
-			"--thinking", "{type: adaptive, display: summarized}",
+			"--thinking", "{type: adaptive, block_binding: {prefix_mismatch_behavior: error}, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 			"--top-k", "5",
 			"--top-p", "0.7",
 			"--beta", "message-batches-2024-09-24",
 			"--user-profile-id", "anthropic-user-profile-id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -111,17 +112,23 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"          type: ephemeral\n" +
 			"          ttl: 5m\n" +
 			"        citations:\n" +
-			"          - cited_text: cited_text\n" +
+			"          - cited_text: The grass is green. The sky is blue.\n" +
 			"            document_index: 0\n" +
 			"            document_title: x\n" +
 			"            end_char_index: 0\n" +
 			"            start_char_index: 0\n" +
 			"            type: char_location\n" +
 			"    role: user\n" +
-			"model: claude-opus-4-6\n" +
+			"    clear_at: next_user_message\n" +
+			"    output_config:\n" +
+			"      effort: low\n" +
+			"model: claude-opus-5\n" +
 			"cache_control:\n" +
 			"  type: ephemeral\n" +
 			"  ttl: 5m\n" +
+			"compaction:\n" +
+			"  type: summarize\n" +
+			"  instructions: instructions\n" +
 			"container:\n" +
 			"  id: id\n" +
 			"  skills:\n" +
@@ -146,24 +153,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"diagnostics:\n" +
 			"  previous_message_id: previous_message_id\n" +
 			"fallback_credit_token: x\n" +
-			"fallbacks:\n" +
-			"  - model: claude-sonnet-5\n" +
-			"    max_tokens: 0\n" +
-			"    output_config:\n" +
-			"      effort: low\n" +
-			"      format:\n" +
-			"        schema:\n" +
-			"          foo: bar\n" +
-			"        type: json_schema\n" +
-			"      task_budget:\n" +
-			"        total: 1024\n" +
-			"        type: tokens\n" +
-			"        remaining: 0\n" +
-			"    speed: standard\n" +
-			"    thinking:\n" +
-			"      budget_tokens: 1024\n" +
-			"      type: enabled\n" +
-			"      display: summarized\n" +
+			"fallbacks: default\n" +
 			"inference_geo: inference_geo\n" +
 			"mcp_servers:\n" +
 			"  - name: name\n" +
@@ -202,7 +192,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"      type: ephemeral\n" +
 			"      ttl: 5m\n" +
 			"    citations:\n" +
-			"      - cited_text: cited_text\n" +
+			"      - cited_text: The grass is green. The sky is blue.\n" +
 			"        document_index: 0\n" +
 			"        document_title: x\n" +
 			"        end_char_index: 0\n" +
@@ -211,6 +201,8 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"temperature: 1\n" +
 			"thinking:\n" +
 			"  type: adaptive\n" +
+			"  block_binding:\n" +
+			"    prefix_mismatch_behavior: error\n" +
 			"  display: summarized\n" +
 			"tool_choice:\n" +
 			"  type: auto\n" +
@@ -245,6 +237,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--max-items", "10",
 			"--beta", "message-batches-2024-09-24",
 			"--user-profile-id", "anthropic-user-profile-id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -255,20 +248,22 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:messages", "count-tokens",
-			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
-			"--model", "claude-opus-4-6",
+			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user, clear_at: next_user_message, output_config: {effort: low}}",
+			"--model", "claude-opus-5",
 			"--cache-control", "{type: ephemeral, ttl: 5m}",
+			"--compaction", "{type: summarize, instructions: instructions}",
 			"--context-management", "{edits: [{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]}",
 			"--mcp-server", "{name: name, type: url, url: url, authorization_token: authorization_token, tool_configuration: {allowed_tools: [string], enabled: true}}",
 			"--output-config", "{effort: low, format: {schema: {foo: bar}, type: json_schema}, task_budget: {total: 1024, type: tokens, remaining: 0}}",
 			"--output-format", "{schema: {foo: bar}, type: json_schema}",
 			"--speed", "standard",
-			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
-			"--thinking", "{type: adaptive, display: summarized}",
+			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
+			"--thinking", "{type: adaptive, block_binding: {prefix_mismatch_behavior: error}, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 			"--beta", "message-batches-2024-09-24",
 			"--user-profile-id", "anthropic-user-profile-id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -281,11 +276,15 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:messages", "count-tokens",
-			"--message.content", "[{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
+			"--message.content", "[{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--message.role", "user",
-			"--model", "claude-opus-4-6",
+			"--message.clear-at", "next_user_message",
+			"--message.output-config", "{effort: low}",
+			"--model", "claude-opus-5",
 			"--cache-control.type", "ephemeral",
 			"--cache-control.ttl", "5m",
+			"--compaction.type", "summarize",
+			"--compaction.instructions", "instructions",
 			"--context-management.edits", "[{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]",
 			"--mcp-server.name", "name",
 			"--mcp-server.type", "url",
@@ -298,12 +297,13 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"--output-format.schema", "{foo: bar}",
 			"--output-format.type", "json_schema",
 			"--speed", "standard",
-			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
-			"--thinking", "{type: adaptive, display: summarized}",
+			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
+			"--thinking", "{type: adaptive, block_binding: {prefix_mismatch_behavior: error}, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 			"--beta", "message-batches-2024-09-24",
 			"--user-profile-id", "anthropic-user-profile-id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -318,17 +318,23 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"          type: ephemeral\n" +
 			"          ttl: 5m\n" +
 			"        citations:\n" +
-			"          - cited_text: cited_text\n" +
+			"          - cited_text: The grass is green. The sky is blue.\n" +
 			"            document_index: 0\n" +
 			"            document_title: x\n" +
 			"            end_char_index: 0\n" +
 			"            start_char_index: 0\n" +
 			"            type: char_location\n" +
 			"    role: user\n" +
-			"model: claude-opus-4-6\n" +
+			"    clear_at: next_user_message\n" +
+			"    output_config:\n" +
+			"      effort: low\n" +
+			"model: claude-opus-5\n" +
 			"cache_control:\n" +
 			"  type: ephemeral\n" +
 			"  ttl: 5m\n" +
+			"compaction:\n" +
+			"  type: summarize\n" +
+			"  instructions: instructions\n" +
 			"context_management:\n" +
 			"  edits:\n" +
 			"    - type: clear_tool_uses_20250919\n" +
@@ -375,7 +381,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"      type: ephemeral\n" +
 			"      ttl: 5m\n" +
 			"    citations:\n" +
-			"      - cited_text: cited_text\n" +
+			"      - cited_text: The grass is green. The sky is blue.\n" +
 			"        document_index: 0\n" +
 			"        document_title: x\n" +
 			"        end_char_index: 0\n" +
@@ -383,6 +389,8 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"        type: char_location\n" +
 			"thinking:\n" +
 			"  type: adaptive\n" +
+			"  block_binding:\n" +
+			"    prefix_mismatch_behavior: error\n" +
 			"  display: summarized\n" +
 			"tool_choice:\n" +
 			"  type: auto\n" +
@@ -414,6 +422,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"beta:messages", "count-tokens",
 			"--beta", "message-batches-2024-09-24",
 			"--user-profile-id", "anthropic-user-profile-id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

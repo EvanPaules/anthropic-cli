@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -21,11 +19,13 @@ var betaMemoryStoresMemoryVersionsRetrieve = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "memory-store-id",
+			Usage:     "The ID of the memory store that holds the version (`memstore_...`).",
 			Required:  true,
 			PathParam: "memory_store_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "memory-version-id",
+			Usage:     "The ID of the memory version to retrieve (`memver_...`).",
 			Required:  true,
 			PathParam: "memory_version_id",
 		},
@@ -39,6 +39,11 @@ var betaMemoryStoresMemoryVersionsRetrieve = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaMemoryStoresMemoryVersionsRetrieve,
 	HideHelpCommand: true,
@@ -51,12 +56,13 @@ var betaMemoryStoresMemoryVersionsList = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "memory-store-id",
+			Usage:     "The ID of the memory store whose version history to list (`memstore_...`).",
 			Required:  true,
 			PathParam: "memory_store_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "api-key-id",
-			Usage:     "Query parameter for api_key_id",
+			Usage:     "Return only versions written with the API key that has this ID.",
 			QueryPath: "api_key_id",
 		},
 		&requestflag.Flag[any]{
@@ -71,12 +77,12 @@ var betaMemoryStoresMemoryVersionsList = cli.Command{
 		},
 		&requestflag.Flag[int64]{
 			Name:      "limit",
-			Usage:     "Query parameter for limit",
+			Usage:     "The maximum number of versions to return per page. Defaults to 20.",
 			QueryPath: "limit",
 		},
 		&requestflag.Flag[string]{
 			Name:      "memory-id",
-			Usage:     "Query parameter for memory_id",
+			Usage:     "Return only versions of the memory with this ID (`mem_...`).\n\nThe filter still works after the memory is deleted. The results then include the version whose `operation` is `deleted`.",
 			QueryPath: "memory_id",
 		},
 		&requestflag.Flag[string]{
@@ -86,12 +92,17 @@ var betaMemoryStoresMemoryVersionsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "page",
-			Usage:     "Query parameter for page",
+			Usage:     "The `next_page` value from a previous response, to get the next page. Omit it to get the first page.",
 			QueryPath: "page",
 		},
 		&requestflag.Flag[string]{
+			Name:      "service-account-id",
+			Usage:     "Return only versions written by the service account with this ID (`svac_...`).",
+			QueryPath: "service_account_id",
+		},
+		&requestflag.Flag[string]{
 			Name:      "session-id",
-			Usage:     "Query parameter for session_id",
+			Usage:     "Return only versions written by the session with this ID.",
 			QueryPath: "session_id",
 		},
 		&requestflag.Flag[string]{
@@ -103,6 +114,11 @@ var betaMemoryStoresMemoryVersionsList = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
@@ -120,11 +136,13 @@ var betaMemoryStoresMemoryVersionsRedact = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "memory-store-id",
+			Usage:     "The ID of the memory store that holds the version (`memstore_...`).",
 			Required:  true,
 			PathParam: "memory_store_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "memory-version-id",
+			Usage:     "The ID of the memory version to redact (`memver_...`).",
 			Required:  true,
 			PathParam: "memory_version_id",
 		},
@@ -132,6 +150,11 @@ var betaMemoryStoresMemoryVersionsRedact = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaMemoryStoresMemoryVersionsRedact,

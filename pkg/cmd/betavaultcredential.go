@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -14,19 +12,20 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaVaultsCredentialsCreate = cli.Command{
+var betaVaultsCredentialsCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "create",
 	Usage:   "Create Credential",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "vault-id",
+			Usage:     "Identifier of the vault to create the credential in.",
 			Required:  true,
 			PathParam: "vault_id",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "auth",
-			Usage:    "Authentication details for creating a credential.",
+			Usage:    "Authentication configuration for the credential.",
 			Required: true,
 			BodyPath: "auth",
 		},
@@ -45,10 +44,67 @@ var betaVaultsCredentialsCreate = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaVaultsCredentialsCreate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"auth": {
+		&requestflag.InnerFlag[string]{
+			Name:       "auth.type",
+			Usage:      `Allowed values: "mcp_oauth", "static_bearer", "environment_variable".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "auth.token",
+			Usage:      "Static bearer token value.",
+			InnerField: "token",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "auth.access-token",
+			Usage:      "OAuth access token.",
+			InnerField: "access_token",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "auth.expires-at",
+			Usage:      "A timestamp in RFC 3339 format",
+			InnerField: "expires_at",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "auth.injection-location",
+			Usage:      "Where in the outbound request the secret value may be substituted.",
+			InnerField: "injection_location",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "auth.mcp-server-url",
+			Usage:      "URL of the MCP server this credential authenticates against.",
+			InnerField: "mcp_server_url",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "auth.networking",
+			InnerField: "networking",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "auth.refresh",
+			Usage:      "OAuth refresh token parameters for creating a credential with refresh support.",
+			InnerField: "refresh",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "auth.secret-name",
+			Usage:      "Name of the environment variable. Immutable after create.",
+			InnerField: "secret_name",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "auth.secret-value",
+			Usage:      "Secret value. Write-only; never returned in responses.",
+			InnerField: "secret_value",
+		},
+	},
+})
 
 var betaVaultsCredentialsRetrieve = cli.Command{
 	Name:    "retrieve",
@@ -57,11 +113,13 @@ var betaVaultsCredentialsRetrieve = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "vault-id",
+			Usage:     "Identifier of the vault containing the credential.",
 			Required:  true,
 			PathParam: "vault_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "credential-id",
+			Usage:     "Unique identifier of the credential to retrieve.",
 			Required:  true,
 			PathParam: "credential_id",
 		},
@@ -70,30 +128,37 @@ var betaVaultsCredentialsRetrieve = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaVaultsCredentialsRetrieve,
 	HideHelpCommand: true,
 }
 
-var betaVaultsCredentialsUpdate = cli.Command{
+var betaVaultsCredentialsUpdate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "update",
 	Usage:   "Update Credential",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "vault-id",
+			Usage:     "Identifier of the vault containing the credential.",
 			Required:  true,
 			PathParam: "vault_id",
 		},
 		&requestflag.Flag[string]{
 			Name:        "credential-id",
+			Usage:       "Unique identifier of the credential to update.",
 			Required:    true,
 			PathParam:   "credential_id",
 			DataAliases: []string{"id"},
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "auth",
-			Usage:    "Updated authentication details for a credential.",
+			Usage:    "Updated authentication configuration. The `type` is immutable; the variant sent must match the stored credential's type.",
 			BodyPath: "auth",
 		},
 		&requestflag.Flag[*string]{
@@ -111,10 +176,57 @@ var betaVaultsCredentialsUpdate = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaVaultsCredentialsUpdate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"auth": {
+		&requestflag.InnerFlag[string]{
+			Name:       "auth.type",
+			Usage:      `Allowed values: "mcp_oauth", "static_bearer", "environment_variable".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "auth.token",
+			Usage:      "Updated static bearer token value.",
+			InnerField: "token",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "auth.access-token",
+			Usage:      "Updated OAuth access token.",
+			InnerField: "access_token",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "auth.expires-at",
+			Usage:      "A timestamp in RFC 3339 format",
+			InnerField: "expires_at",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "auth.injection-location",
+			Usage:      "Updated injection location.",
+			InnerField: "injection_location",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "auth.networking",
+			InnerField: "networking",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "auth.refresh",
+			Usage:      "Parameters for updating OAuth refresh token configuration.",
+			InnerField: "refresh",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "auth.secret-value",
+			Usage:      "Updated secret value.",
+			InnerField: "secret_value",
+		},
+	},
+})
 
 var betaVaultsCredentialsList = cli.Command{
 	Name:    "list",
@@ -123,6 +235,7 @@ var betaVaultsCredentialsList = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "vault-id",
+			Usage:     "Identifier of the vault to list credentials for.",
 			Required:  true,
 			PathParam: "vault_id",
 		},
@@ -146,6 +259,11 @@ var betaVaultsCredentialsList = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
@@ -162,11 +280,13 @@ var betaVaultsCredentialsDelete = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "vault-id",
+			Usage:     "Identifier of the vault containing the credential.",
 			Required:  true,
 			PathParam: "vault_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "credential-id",
+			Usage:     "Unique identifier of the credential to delete.",
 			Required:  true,
 			PathParam: "credential_id",
 		},
@@ -174,6 +294,11 @@ var betaVaultsCredentialsDelete = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaVaultsCredentialsDelete,
@@ -187,11 +312,13 @@ var betaVaultsCredentialsArchive = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "vault-id",
+			Usage:     "Identifier of the vault containing the credential.",
 			Required:  true,
 			PathParam: "vault_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "credential-id",
+			Usage:     "Unique identifier of the credential to archive.",
 			Required:  true,
 			PathParam: "credential_id",
 		},
@@ -199,6 +326,11 @@ var betaVaultsCredentialsArchive = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaVaultsCredentialsArchive,
@@ -212,11 +344,13 @@ var betaVaultsCredentialsMCPOAuthValidate = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "vault-id",
+			Usage:     "Identifier of the vault containing the credential.",
 			Required:  true,
 			PathParam: "vault_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "credential-id",
+			Usage:     "Unique identifier of the credential to validate.",
 			Required:  true,
 			PathParam: "credential_id",
 		},
@@ -224,6 +358,11 @@ var betaVaultsCredentialsMCPOAuthValidate = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaVaultsCredentialsMCPOAuthValidate,

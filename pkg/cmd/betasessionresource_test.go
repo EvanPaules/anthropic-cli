@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -18,6 +16,7 @@ func TestBetaSessionsResourcesRetrieve(t *testing.T) {
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--resource-id", "sesrsc_011CZkZBJq5dWxk9fVLNcPht",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -33,6 +32,7 @@ func TestBetaSessionsResourcesUpdate(t *testing.T) {
 			"--resource-id", "sesrsc_011CZkZBJq5dWxk9fVLNcPht",
 			"--authorization-token", "ghp_exampletoken",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -46,6 +46,7 @@ func TestBetaSessionsResourcesUpdate(t *testing.T) {
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--resource-id", "sesrsc_011CZkZBJq5dWxk9fVLNcPht",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -62,6 +63,7 @@ func TestBetaSessionsResourcesList(t *testing.T) {
 			"--limit", "0",
 			"--page", "page",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -76,6 +78,7 @@ func TestBetaSessionsResourcesDelete(t *testing.T) {
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--resource-id", "sesrsc_011CZkZBJq5dWxk9fVLNcPht",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -92,6 +95,7 @@ func TestBetaSessionsResourcesAdd(t *testing.T) {
 			"--type", "file",
 			"--mount-path", "/uploads/receipt.pdf",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -107,6 +111,7 @@ func TestBetaSessionsResourcesAdd(t *testing.T) {
 			"beta:sessions:resources", "add",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

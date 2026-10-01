@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -14,7 +12,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaEnvironmentsCreate = cli.Command{
+var betaEnvironmentsCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "create",
 	Usage:   "Create a new environment with the specified configuration.",
 	Suggest: true,
@@ -42,7 +40,7 @@ var betaEnvironmentsCreate = cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "scope",
-			Usage:    "The visibility scope for this environment. 'organization' makes the environment visible to all accounts. 'account' restricts visibility to the owning account only. Only applicable for self-hosted environments. If not specified, defaults based on organization type.",
+			Usage:    "The visibility scope for this environment. 'organization' makes the environment visible to all accounts. 'account' restricts visibility to the owning account only. API organizations support only 'organization'; 'account' is rejected. If not specified, defaults based on organization type.",
 			BodyPath: "scope",
 		},
 		&requestflag.Flag[[]string]{
@@ -50,10 +48,32 @@ var betaEnvironmentsCreate = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaEnvironmentsCreate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"config": {
+		&requestflag.InnerFlag[string]{
+			Name:       "config.type",
+			Usage:      "Environment type",
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "config.networking",
+			InnerField: "networking",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "config.packages",
+			Usage:      "Specify packages (and optionally their versions) available in this environment.\n\nWhen versioning, use the version semantics relevant for the package manager, e.g. for `pip` use `package==1.0.0`. You are responsible for validating the package and version exist. Unversioned installs the latest.\n\nUnder `limited` networking, requires `networking.allow_package_managers` to be `true`.",
+			InnerField: "packages",
+		},
+	},
+})
 
 var betaEnvironmentsRetrieve = cli.Command{
 	Name:    "retrieve",
@@ -70,12 +90,17 @@ var betaEnvironmentsRetrieve = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaEnvironmentsRetrieve,
 	HideHelpCommand: true,
 }
 
-var betaEnvironmentsUpdate = cli.Command{
+var betaEnvironmentsUpdate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "update",
 	Usage:   "Update an existing environment's configuration.",
 	Suggest: true,
@@ -93,7 +118,7 @@ var betaEnvironmentsUpdate = cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "description",
-			Usage:    "Updated description of the environment",
+			Usage:    "Updated description of the environment. Omit to preserve; null clears to null; an empty string is stored as an empty string.",
 			BodyPath: "description",
 		},
 		&requestflag.Flag[map[string]any]{
@@ -116,10 +141,32 @@ var betaEnvironmentsUpdate = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaEnvironmentsUpdate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"config": {
+		&requestflag.InnerFlag[string]{
+			Name:       "config.type",
+			Usage:      "Environment type",
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "config.networking",
+			InnerField: "networking",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "config.packages",
+			Usage:      "Specify packages (and optionally their versions) available in this environment.\n\nWhen versioning, use the version semantics relevant for the package manager, e.g. for `pip` use `package==1.0.0`. You are responsible for validating the package and version exist. Unversioned installs the latest.\n\nUnder `limited` networking, requires `networking.allow_package_managers` to be `true`.",
+			InnerField: "packages",
+		},
+	},
+})
 
 var betaEnvironmentsList = cli.Command{
 	Name:    "list",
@@ -138,7 +185,7 @@ var betaEnvironmentsList = cli.Command{
 			Default:   20,
 			QueryPath: "limit",
 		},
-		&requestflag.Flag[*string]{
+		&requestflag.Flag[string]{
 			Name:      "page",
 			Usage:     "Opaque cursor from previous response for pagination. Pass the `next_page` value from the previous response.",
 			QueryPath: "page",
@@ -147,6 +194,11 @@ var betaEnvironmentsList = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
@@ -172,6 +224,11 @@ var betaEnvironmentsDelete = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaEnvironmentsDelete,
 	HideHelpCommand: true,
@@ -191,6 +248,11 @@ var betaEnvironmentsArchive = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaEnvironmentsArchive,

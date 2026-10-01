@@ -881,6 +881,96 @@ func TestInnerFlagDispatchOnUntypedFlag(t *testing.T) {
 	})
 }
 
+// TestInnerFlagDispatchOnUntypedSliceOuter pins inner-flag behavior for
+// `Flag[[]any]`, the codegen output for a non-nullable array of a union
+// whose variants disagree on type (e.g. an object variant plus a string
+// variant). The `any` element type must accumulate inner fields into a
+// trailing map element the same way `[]map[string]any` does — the value must
+// never be dropped while the flag is still reported as set.
+func TestInnerFlagDispatchOnUntypedSliceOuter(t *testing.T) {
+	t.Parallel()
+
+	t.Run("array of any appends element from inner flag", func(t *testing.T) {
+		t.Parallel()
+		outer := &Flag[[]any]{Name: "item"}
+		assert.NoError(t, outer.PreParse())
+
+		nameFlag := &InnerFlag[string]{
+			Name: "item.name", InnerField: "name", OuterFlag: outer,
+		}
+		countFlag := &InnerFlag[int64]{
+			Name: "item.count", InnerField: "count", OuterFlag: outer,
+		}
+		assert.NoError(t, nameFlag.Set("item.name", "first"))
+		assert.NoError(t, countFlag.Set("item.count", "2"))
+
+		body, err := json.Marshal(map[string]any{"foo": outer.Get()})
+		assert.NoError(t, err)
+		assert.JSONEq(t, `{"foo":[{"name":"first","count":2}]}`, string(body))
+	})
+
+	t.Run("array of any starts a new element when the field repeats", func(t *testing.T) {
+		t.Parallel()
+		outer := &Flag[[]any]{Name: "item"}
+		assert.NoError(t, outer.PreParse())
+
+		nameFlag := &InnerFlag[string]{
+			Name: "item.name", InnerField: "name", OuterFlag: outer,
+		}
+		assert.NoError(t, nameFlag.Set("item.name", "first"))
+		assert.NoError(t, nameFlag.Set("item.name", "second"))
+
+		body, err := json.Marshal(map[string]any{"foo": outer.Get()})
+		assert.NoError(t, err)
+		assert.JSONEq(t, `{"foo":[{"name":"first"},{"name":"second"}]}`, string(body))
+	})
+
+	t.Run("array of any tolerates a non-object trailing element", func(t *testing.T) {
+		t.Parallel()
+		outer := &Flag[[]any]{Name: "item"}
+		assert.NoError(t, outer.PreParse())
+		assert.NoError(t, outer.Set("item", "plain"))
+
+		nameFlag := &InnerFlag[string]{
+			Name: "item.name", InnerField: "name", OuterFlag: outer,
+		}
+		assert.NoError(t, nameFlag.Set("item.name", "first"))
+
+		body, err := json.Marshal(map[string]any{"foo": outer.Get()})
+		assert.NoError(t, err)
+		assert.JSONEq(t, `{"foo":["plain",{"name":"first"}]}`, string(body))
+	})
+
+	t.Run("typed map slice tolerates a null trailing element", func(t *testing.T) {
+		t.Parallel()
+		outer := &Flag[[]map[string]any]{Name: "message"}
+		assert.NoError(t, outer.PreParse())
+		// `--message null` appends a nil map; a following dotted sub-flag must
+		// not write into it (nil-map assignment panics) — it starts a new element.
+		assert.NoError(t, outer.Set("message", "null"))
+
+		typeFlag := &InnerFlag[string]{
+			Name: "message.type", InnerField: "type", OuterFlag: outer,
+		}
+		assert.NoError(t, typeFlag.Set("message.type", "user"))
+
+		body, err := json.Marshal(map[string]any{"foo": outer.Get()})
+		assert.NoError(t, err)
+		assert.JSONEq(t, `{"foo":[null,{"type":"user"}]}`, string(body))
+	})
+
+	t.Run("lone null element stays null", func(t *testing.T) {
+		t.Parallel()
+		outer := &Flag[[]map[string]any]{Name: "message"}
+		assert.NoError(t, outer.PreParse())
+		assert.NoError(t, outer.Set("message", "null"))
+
+		body, err := json.Marshal(map[string]any{"foo": outer.Get()})
+		assert.NoError(t, err)
+		assert.JSONEq(t, `{"foo":[null]}`, string(body))
+	})
+}
+
 func TestApplyStdinDataToFlags(t *testing.T) {
 	t.Parallel()
 
@@ -899,6 +989,43 @@ func TestApplyStdinDataToFlags(t *testing.T) {
 
 		assert.True(t, flag.IsSet())
 		assert.Equal(t, "acct_123", flag.Get())
+	})
+
+	t.Run("applies piped arrays element-wise to typed repeatable query flags", func(t *testing.T) {
+		t.Parallel()
+
+		ids := &Flag[[]string]{Name: "id", QueryPath: "ids"}
+		limits := &Flag[[]int64]{Name: "limit", QueryPath: "limits"}
+		assert.NoError(t, ids.PreParse())
+		assert.NoError(t, limits.PreParse())
+
+		data := map[string]any{"ids": []any{"a", "b"}, "limits": []any{1, 2}, "keep": "body"}
+		cmd := &cli.Command{Flags: []cli.Flag{ids, limits}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.Equal(t, []string{"a", "b"}, ids.Get())
+		assert.Equal(t, []int64{1, 2}, limits.Get())
+		assert.Equal(t, map[string]any{"keep": "body"}, data, "consumed keys must not also reach the body merge")
+	})
+
+	t.Run("piped null or [] is consumed but leaves query/header flags unset (same request as omitted)", func(t *testing.T) {
+		t.Parallel()
+
+		ids := &Flag[[]int64]{Name: "id", QueryPath: "ids"}
+		tags := &Flag[[]string]{Name: "tag", QueryPath: "tags"}
+		name := &Flag[string]{Name: "name", HeaderPath: "X-Name"}
+		for _, f := range []cli.Flag{ids, tags, name} {
+			assert.NoError(t, f.(interface{ PreParse() error }).PreParse())
+		}
+
+		cmd := &cli.Command{Flags: []cli.Flag{ids, tags, name}}
+		data := map[string]any{"ids": nil, "tags": []any{}, "X-Name": nil, "keep": "body"}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.False(t, ids.IsSet())
+		assert.False(t, tags.IsSet())
+		assert.False(t, name.IsSet())
+		assert.Equal(t, map[string]any{"keep": "body"}, data, "consumed keys must not leak into the body merge")
 	})
 
 	t.Run("sets header path flag from piped data", func(t *testing.T) {

@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -17,11 +15,37 @@ func TestBetaSessionsCreate(t *testing.T) {
 			"beta:sessions", "create",
 			"--agent", "agent_011CZkYpogX7uDKUyvBTophP",
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
+			"--budget", "{max_list_cost: {amount: '2500', currency: USD}, type: limit}",
+			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
 			"--metadata", "{foo: string}",
 			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
 			"--title", "Order #1234 inquiry",
 			"--vault-id", "string",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
+		)
+	})
+
+	t.Run("inner flags", func(t *testing.T) {
+		// Check that inner flags have been set up correctly
+		requestflag.CheckInnerFlags(betaSessionsCreate)
+
+		// Alternative argument passing style using inner flags
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"beta:sessions", "create",
+			"--agent", "agent_011CZkYpogX7uDKUyvBTophP",
+			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
+			"--budget.max-list-cost", "{amount: '2500', currency: USD}",
+			"--budget.type", "limit",
+			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
+			"--metadata", "{foo: string}",
+			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
+			"--title", "Order #1234 inquiry",
+			"--vault-id", "string",
+			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -30,6 +54,16 @@ func TestBetaSessionsCreate(t *testing.T) {
 		pipeData := []byte("" +
 			"agent: agent_011CZkYpogX7uDKUyvBTophP\n" +
 			"environment_id: env_011CZkZ9X2dpNyB7HsEFoRfW\n" +
+			"budget:\n" +
+			"  max_list_cost:\n" +
+			"    amount: '2500'\n" +
+			"    currency: USD\n" +
+			"  type: limit\n" +
+			"initial_events:\n" +
+			"  - content:\n" +
+			"      - text: 'Where is my order #1234?'\n" +
+			"        type: text\n" +
+			"    type: user.message\n" +
 			"metadata:\n" +
 			"  foo: string\n" +
 			"resources:\n" +
@@ -44,6 +78,7 @@ func TestBetaSessionsCreate(t *testing.T) {
 			"--api-key", "string",
 			"beta:sessions", "create",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -56,6 +91,7 @@ func TestBetaSessionsRetrieve(t *testing.T) {
 			"beta:sessions", "retrieve",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -67,11 +103,13 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"--api-key", "string",
 			"beta:sessions", "update",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
-			"--agent", "{mcp_servers: [{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}], tools: [{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]}",
+			"--agent", "{mcp_servers: [{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}], tools: [{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]}",
+			"--budget", "{max_list_cost: {amount: '2500', currency: USD}, type: limit}",
 			"--metadata", "{foo: string}",
 			"--title", "Order #1234 inquiry",
 			"--vault-id", "string",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -86,11 +124,14 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"beta:sessions", "update",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--agent.mcp-servers", "[{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}]",
-			"--agent.tools", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
+			"--agent.tools", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
+			"--budget.max-list-cost", "{amount: '2500', currency: USD}",
+			"--budget.type", "limit",
 			"--metadata", "{foo: string}",
 			"--title", "Order #1234 inquiry",
 			"--vault-id", "string",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -109,10 +150,16 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"          enabled: true\n" +
 			"          permission_policy:\n" +
 			"            type: always_allow\n" +
+			"          type: bash\n" +
 			"      default_config:\n" +
 			"        enabled: true\n" +
 			"        permission_policy:\n" +
 			"          type: always_allow\n" +
+			"budget:\n" +
+			"  max_list_cost:\n" +
+			"    amount: '2500'\n" +
+			"    currency: USD\n" +
+			"  type: limit\n" +
 			"metadata:\n" +
 			"  foo: string\n" +
 			"title: 'Order #1234 inquiry'\n" +
@@ -124,12 +171,13 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"beta:sessions", "update",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
 
 func TestBetaSessionsList(t *testing.T) {
-	t.Skip("buildURL drops path-level query params (SDK-4349)")
+	t.Skip("buildURL drops path-level query params")
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
@@ -150,6 +198,7 @@ func TestBetaSessionsList(t *testing.T) {
 			"--page", "page",
 			"--status", "rescheduling",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -162,6 +211,7 @@ func TestBetaSessionsDelete(t *testing.T) {
 			"beta:sessions", "delete",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -174,6 +224,7 @@ func TestBetaSessionsArchive(t *testing.T) {
 			"beta:sessions", "archive",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

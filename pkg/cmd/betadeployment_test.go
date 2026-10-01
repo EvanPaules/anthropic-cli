@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -19,12 +17,14 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"--environment-id", "x",
 			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
 			"--name", "x",
+			"--budget", "{max_list_cost: {amount: '2500', currency: USD}, type: limit}",
 			"--description", "description",
 			"--metadata", "{foo: string}",
 			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
 			"--schedule", "{expression: 0 9 * * 1-5, timezone: America/Los_Angeles, type: cron}",
 			"--vault-id", "string",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -41,6 +41,8 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"--environment-id", "x",
 			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
 			"--name", "x",
+			"--budget.max-list-cost", "{amount: '2500', currency: USD}",
+			"--budget.type", "limit",
 			"--description", "description",
 			"--metadata", "{foo: string}",
 			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
@@ -49,6 +51,7 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"--schedule.type", "cron",
 			"--vault-id", "string",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -63,6 +66,11 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"        type: text\n" +
 			"    type: user.message\n" +
 			"name: x\n" +
+			"budget:\n" +
+			"  max_list_cost:\n" +
+			"    amount: '2500'\n" +
+			"    currency: USD\n" +
+			"  type: limit\n" +
 			"description: description\n" +
 			"metadata:\n" +
 			"  foo: string\n" +
@@ -81,12 +89,13 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"--api-key", "string",
 			"beta:deployments", "create",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
 
 func TestBetaDeploymentsRetrieve(t *testing.T) {
-	t.Skip("buildURL drops path-level query params (SDK-4349)")
+	t.Skip("buildURL drops path-level query params")
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
@@ -94,6 +103,7 @@ func TestBetaDeploymentsRetrieve(t *testing.T) {
 			"beta:deployments", "retrieve",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -106,6 +116,7 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"beta:deployments", "update",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--agent", "string",
+			"--budget", "{max_list_cost: {amount: '2500', currency: USD}, type: limit}",
 			"--description", "description",
 			"--environment-id", "environment_id",
 			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
@@ -115,6 +126,7 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"--schedule", "{expression: 0 9 * * 1-5, timezone: America/Los_Angeles, type: cron}",
 			"--vault-id", "[string]",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -129,6 +141,8 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"beta:deployments", "update",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--agent", "string",
+			"--budget.max-list-cost", "{amount: '2500', currency: USD}",
+			"--budget.type", "limit",
 			"--description", "description",
 			"--environment-id", "environment_id",
 			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
@@ -140,6 +154,7 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"--schedule.type", "cron",
 			"--vault-id", "[string]",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -147,6 +162,11 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
 			"agent: string\n" +
+			"budget:\n" +
+			"  max_list_cost:\n" +
+			"    amount: '2500'\n" +
+			"    currency: USD\n" +
+			"  type: limit\n" +
 			"description: description\n" +
 			"environment_id: environment_id\n" +
 			"initial_events:\n" +
@@ -173,12 +193,13 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"beta:deployments", "update",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
 
 func TestBetaDeploymentsList(t *testing.T) {
-	t.Skip("buildURL drops path-level query params (SDK-4349)")
+	t.Skip("buildURL drops path-level query params")
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
@@ -193,6 +214,7 @@ func TestBetaDeploymentsList(t *testing.T) {
 			"--page", "page",
 			"--status", "active",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -205,6 +227,7 @@ func TestBetaDeploymentsArchive(t *testing.T) {
 			"beta:deployments", "archive",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -217,6 +240,7 @@ func TestBetaDeploymentsPause(t *testing.T) {
 			"beta:deployments", "pause",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -229,6 +253,7 @@ func TestBetaDeploymentsRun(t *testing.T) {
 			"beta:deployments", "run",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -241,6 +266,7 @@ func TestBetaDeploymentsUnpause(t *testing.T) {
 			"beta:deployments", "unpause",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -20,6 +18,7 @@ func TestBetaMemoryStoresMemoriesCreate(t *testing.T) {
 			"--path", "xx",
 			"--view", "basic",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -35,6 +34,7 @@ func TestBetaMemoryStoresMemoriesCreate(t *testing.T) {
 			"--memory-store-id", "memory_store_id",
 			"--view", "basic",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -49,6 +49,7 @@ func TestBetaMemoryStoresMemoriesRetrieve(t *testing.T) {
 			"--memory-id", "memory_id",
 			"--view", "basic",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -66,6 +67,7 @@ func TestBetaMemoryStoresMemoriesUpdate(t *testing.T) {
 			"--path", "xx",
 			"--precondition", "{type: content_sha256, content_sha256: content_sha256}",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -86,6 +88,7 @@ func TestBetaMemoryStoresMemoriesUpdate(t *testing.T) {
 			"--precondition.type", "content_sha256",
 			"--precondition.content-sha256", "content_sha256",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -105,12 +108,13 @@ func TestBetaMemoryStoresMemoriesUpdate(t *testing.T) {
 			"--memory-id", "memory_id",
 			"--view", "basic",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
 
 func TestBetaMemoryStoresMemoriesList(t *testing.T) {
-	t.Skip("buildURL drops path-level query params (SDK-4349)")
+	t.Skip("buildURL drops path-level query params")
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
@@ -124,6 +128,7 @@ func TestBetaMemoryStoresMemoriesList(t *testing.T) {
 			"--path-prefix", "path_prefix",
 			"--view", "basic",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -138,6 +143,7 @@ func TestBetaMemoryStoresMemoriesDelete(t *testing.T) {
 			"--memory-id", "memory_id",
 			"--expected-content-sha256", "expected_content_sha256",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

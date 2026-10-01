@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -14,7 +12,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaSessionsCreate = cli.Command{
+var betaSessionsCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "create",
 	Usage:   "Create Session",
 	Suggest: true,
@@ -30,6 +28,16 @@ var betaSessionsCreate = cli.Command{
 			Usage:    "ID of the `environment` defining the container configuration for this session.",
 			Required: true,
 			BodyPath: "environment_id",
+		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "budget",
+			Usage:    "A hard spend ceiling. The session stops issuing new model requests once the tracked list cost reaches `max_list_cost`.",
+			BodyPath: "budget",
+		},
+		&requestflag.Flag[[]map[string]any]{
+			Name:     "initial-event",
+			Usage:    "Initial events to send to the `session` at creation, processed in order. Supports `user.message` and `user.define_outcome` events. Maximum 50 events.",
+			BodyPath: "initial_events",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
@@ -56,10 +64,137 @@ var betaSessionsCreate = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaSessionsCreate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"agent": {
+		&requestflag.InnerFlag[string]{
+			Name:       "agent.id",
+			Usage:      "The `agent` ID.",
+			InnerField: "id",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "agent.type",
+			Usage:      `Allowed values: "agent", "agent_with_overrides".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "agent.mcp-servers",
+			InnerField: "mcp_servers",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "agent.model",
+			InnerField: "model",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "agent.skills",
+			InnerField: "skills",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "agent.system",
+			Usage:      "Replacement system prompt. Up to 100,000 characters. Set to null to clear the agent's system prompt; omit to preserve it.",
+			InnerField: "system",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "agent.tools",
+			InnerField: "tools",
+		},
+		&requestflag.InnerFlag[int64]{
+			Name:       "agent.version",
+			Usage:      "The specific `agent` version to use. Omit to use the latest version. Must be at least 1 if specified.",
+			InnerField: "version",
+		},
+	},
+	"budget": {
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "budget.max-list-cost",
+			Usage:      "A monetary amount in a specific currency.",
+			InnerField: "max_list_cost",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "budget.type",
+			Usage:      `Allowed values: "limit".`,
+			InnerField: "type",
+		},
+	},
+	"initial-event": {
+		&requestflag.InnerFlag[string]{
+			Name:       "initial-event.type",
+			Usage:      `Allowed values: "user.message", "user.define_outcome".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "initial-event.content",
+			InnerField: "content",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "initial-event.description",
+			Usage:      "What the agent should produce. This is the task specification.",
+			InnerField: "description",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "initial-event.max-iterations",
+			Usage:      "Eval→revision cycles before giving up. Default 3, max 20.",
+			InnerField: "max_iterations",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "initial-event.rubric",
+			InnerField: "rubric",
+		},
+	},
+	"resource": {
+		&requestflag.InnerFlag[string]{
+			Name:       "resource.type",
+			Usage:      `Allowed values: "github_repository", "file", "memory_store".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "resource.access",
+			Usage:      "Access mode for the mounted store. Defaults to read_write. read_only mounts the store as a read-only filesystem.",
+			InnerField: "access",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "resource.authorization-token",
+			Usage:      "GitHub authorization token used to clone the repository. Required for private repositories; optional for public ones.",
+			InnerField: "authorization_token",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "resource.checkout",
+			InnerField: "checkout",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "resource.file-id",
+			Usage:      "ID of a previously uploaded file.",
+			InnerField: "file_id",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "resource.instructions",
+			Usage:      "Per-attachment guidance for the agent on how to use this store. Rendered into the memory section of the system prompt. Max 4096 chars.",
+			InnerField: "instructions",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "resource.memory-store-id",
+			Usage:      "The memory store ID (memstore_...). Must belong to the caller's organization and workspace.",
+			InnerField: "memory_store_id",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "resource.mount-path",
+			Usage:      "Mount path in the container. Defaults to `/workspace/<repo-name>`.",
+			InnerField: "mount_path",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "resource.url",
+			Usage:      "Github URL of the repository",
+			InnerField: "url",
+		},
+	},
+})
 
 var betaSessionsRetrieve = cli.Command{
 	Name:    "retrieve",
@@ -75,6 +210,11 @@ var betaSessionsRetrieve = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaSessionsRetrieve,
@@ -98,6 +238,11 @@ var betaSessionsUpdate = requestflag.WithInnerFlags(cli.Command{
 			BodyPath: "agent",
 		},
 		&requestflag.Flag[map[string]any]{
+			Name:     "budget",
+			Usage:    "A hard spend ceiling. The session stops issuing new model requests once the tracked list cost reaches `max_list_cost`.",
+			BodyPath: "budget",
+		},
+		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
 			Usage:    "Metadata patch. Set a key to a string to upsert it, or to null to delete it. Omit the field to preserve.",
 			BodyPath: "metadata",
@@ -117,6 +262,11 @@ var betaSessionsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaSessionsUpdate,
 	HideHelpCommand: true,
@@ -133,6 +283,18 @@ var betaSessionsUpdate = requestflag.WithInnerFlags(cli.Command{
 			InnerField: "tools",
 		},
 	},
+	"budget": {
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "budget.max-list-cost",
+			Usage:      "A monetary amount in a specific currency.",
+			InnerField: "max_list_cost",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "budget.type",
+			Usage:      `Allowed values: "limit".`,
+			InnerField: "type",
+		},
+	},
 })
 
 var betaSessionsList = cli.Command{
@@ -147,7 +309,7 @@ var betaSessionsList = cli.Command{
 		},
 		&requestflag.Flag[int64]{
 			Name:      "agent-version",
-			Usage:     "Filter by agent version. Only applies when agent_id is also set.",
+			Usage:     "Filter by agent version. Only applies when `agent_id` is also set.",
 			QueryPath: "agent_version",
 		},
 		&requestflag.Flag[any]{
@@ -187,12 +349,12 @@ var betaSessionsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "memory-store-id",
-			Usage:     "Filter sessions whose resources contain a memory_store with this memory store ID.",
+			Usage:     "Filter sessions whose resources contain a `memory_store` with this memory store ID.",
 			QueryPath: "memory_store_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "order",
-			Usage:     "Sort direction for results, ordered by created_at. Defaults to desc (newest first).",
+			Usage:     "Sort direction for results, ordered by `created_at`. Defaults to `desc` (newest first).",
 			QueryPath: "order",
 		},
 		&requestflag.Flag[string]{
@@ -209,6 +371,11 @@ var betaSessionsList = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
@@ -234,6 +401,11 @@ var betaSessionsDelete = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaSessionsDelete,
 	HideHelpCommand: true,
@@ -253,6 +425,11 @@ var betaSessionsArchive = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaSessionsArchive,

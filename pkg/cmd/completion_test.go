@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -17,7 +15,7 @@ func TestCompletionsCreate(t *testing.T) {
 			"completions", "create",
 			"--max-items", "10",
 			"--max-tokens-to-sample", "256",
-			"--model", "claude-sonnet-5",
+			"--model", "claude-sonnet-5-5",
 			"--prompt", "\n\nHuman: Hello, world!\n\nAssistant:",
 			"--metadata", "{user_id: 13803d75-b4b5-4c3e-b2a2-6f21399b021b}",
 			"--stop-sequence", "string",
@@ -26,6 +24,7 @@ func TestCompletionsCreate(t *testing.T) {
 			"--top-k", "5",
 			"--top-p", "0.7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -40,7 +39,7 @@ func TestCompletionsCreate(t *testing.T) {
 			"completions", "create",
 			"--max-items", "10",
 			"--max-tokens-to-sample", "256",
-			"--model", "claude-sonnet-5",
+			"--model", "claude-sonnet-5-5",
 			"--prompt", "\n\nHuman: Hello, world!\n\nAssistant:",
 			"--metadata.user-id", "13803d75-b4b5-4c3e-b2a2-6f21399b021b",
 			"--stop-sequence", "string",
@@ -49,6 +48,7 @@ func TestCompletionsCreate(t *testing.T) {
 			"--top-k", "5",
 			"--top-p", "0.7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -56,7 +56,7 @@ func TestCompletionsCreate(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
 			"max_tokens_to_sample: 256\n" +
-			"model: claude-sonnet-5\n" +
+			"model: claude-sonnet-5-5\n" +
 			"prompt: |-\n" +
 			"\n" +
 			"\n" +
@@ -77,6 +77,7 @@ func TestCompletionsCreate(t *testing.T) {
 			"completions", "create",
 			"--max-items", "10",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -17,8 +15,9 @@ func TestBetaSkillsCreate(t *testing.T) {
 			"--api-key", "string",
 			"beta:skills", "create",
 			"--file", mocktest.TestFile(t, "Example data"),
-			"--display-title", "display_title",
+			"--display-name", "display_name",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -28,7 +27,7 @@ func TestBetaSkillsCreate(t *testing.T) {
 		pipeDataStr := "" +
 			"files:\n" +
 			"  - Example data\n" +
-			"display_title: display_title\n"
+			"display_name: display_name\n"
 		pipeDataStr = strings.ReplaceAll(pipeDataStr, "Example data", testFile)
 		pipeData := []byte(pipeDataStr)
 		mocktest.TestRunMockTestWithPipeAndFlags(
@@ -36,6 +35,7 @@ func TestBetaSkillsCreate(t *testing.T) {
 			"--api-key", "string",
 			"beta:skills", "create",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -48,6 +48,7 @@ func TestBetaSkillsRetrieve(t *testing.T) {
 			"beta:skills", "retrieve",
 			"--skill-id", "skill_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -59,10 +60,11 @@ func TestBetaSkillsList(t *testing.T) {
 			"--api-key", "string",
 			"beta:skills", "list",
 			"--max-items", "10",
-			"--limit", "0",
+			"--limit", "1",
 			"--page", "page",
 			"--source", "source",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -75,6 +77,7 @@ func TestBetaSkillsDelete(t *testing.T) {
 			"beta:skills", "delete",
 			"--skill-id", "skill_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

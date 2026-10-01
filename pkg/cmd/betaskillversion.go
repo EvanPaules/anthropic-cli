@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -38,6 +36,11 @@ var betaSkillsVersionsCreate = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaSkillsVersionsCreate,
 	HideHelpCommand: true,
@@ -56,7 +59,7 @@ var betaSkillsVersionsRetrieve = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "version",
-			Usage:     "Version identifier for the skill.\n\nEach version is identified by a Unix epoch timestamp (e.g., \"1759178010641129\").",
+			Usage:     "Identifies the skill version: a version ID, or the literal `latest` for the skill's most recent version.\n\nRequests carrying the `skills-2025-10-02` beta header address versions by their Unix epoch timestamp instead (e.g., \"1759178010641129\").",
 			Required:  true,
 			PathParam: "version",
 		},
@@ -64,6 +67,11 @@ var betaSkillsVersionsRetrieve = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaSkillsVersionsRetrieve,
@@ -81,12 +89,13 @@ var betaSkillsVersionsList = cli.Command{
 			Required:  true,
 			PathParam: "skill_id",
 		},
-		&requestflag.Flag[*int64]{
+		&requestflag.Flag[int64]{
 			Name:      "limit",
-			Usage:     "Number of items to return per page.\n\nDefaults to `20`. Ranges from `1` to `1000`.",
+			Usage:     "Number of results to return per page.\n\nRanges from `1` to `1000`. Defaults to `20`.",
+			Default:   20,
 			QueryPath: "limit",
 		},
-		&requestflag.Flag[*string]{
+		&requestflag.Flag[string]{
 			Name:      "page",
 			Usage:     "Optionally set to the `next_page` token from the previous response.",
 			QueryPath: "page",
@@ -95,6 +104,11 @@ var betaSkillsVersionsList = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
@@ -118,7 +132,7 @@ var betaSkillsVersionsDelete = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "version",
-			Usage:     "Version identifier for the skill.\n\nEach version is identified by a Unix epoch timestamp (e.g., \"1759178010641129\").",
+			Usage:     "Identifies the skill version by its version ID.\n\nRequests carrying the `skills-2025-10-02` beta header address versions by their Unix epoch timestamp instead (e.g., \"1759178010641129\").",
 			Required:  true,
 			PathParam: "version",
 		},
@@ -126,6 +140,11 @@ var betaSkillsVersionsDelete = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaSkillsVersionsDelete,
@@ -145,7 +164,7 @@ var betaSkillsVersionsDownload = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "version",
-			Usage:     "Version identifier for the skill.\n\nEach version is identified by a Unix epoch timestamp (e.g., \"1759178010641129\").",
+			Usage:     "Identifies the skill version by its version ID.\n\nRequests carrying the `skills-2025-10-02` beta header address versions by their Unix epoch timestamp instead (e.g., \"1759178010641129\").",
 			Required:  true,
 			PathParam: "version",
 		},
@@ -153,6 +172,11 @@ var betaSkillsVersionsDownload = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 		&requestflag.Flag[string]{
 			Name:    "output",

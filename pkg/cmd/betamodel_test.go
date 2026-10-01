@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -16,6 +14,7 @@ func TestBetaModelsRetrieve(t *testing.T) {
 			"beta:models", "retrieve",
 			"--model-id", "model_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -31,6 +30,7 @@ func TestBetaModelsList(t *testing.T) {
 			"--before-id", "before_id",
 			"--limit", "1",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

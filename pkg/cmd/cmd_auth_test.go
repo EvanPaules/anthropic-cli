@@ -407,7 +407,7 @@ func TestMultiAuthWarning(t *testing.T) {
 
 	t.Run("api-key and explicit profile", func(t *testing.T) {
 		reset()
-		out := captureStderr(t, func() { warnIfMultipleAuthSources(true, false, true, false, false) })
+		out := captureStderr(t, func() { warnIfMultipleAuthSources("--api-key / ANTHROPIC_API_KEY", "", true, false, false) })
 		assert.Contains(t, out, "multiple auth sources configured")
 		assert.Contains(t, out, "--api-key / ANTHROPIC_API_KEY")
 		assert.Contains(t, out, "profile from --profile / ANTHROPIC_PROFILE")
@@ -417,7 +417,7 @@ func TestMultiAuthWarning(t *testing.T) {
 
 	t.Run("federation beats implicit profile", func(t *testing.T) {
 		reset()
-		out := captureStderr(t, func() { warnIfMultipleAuthSources(false, false, false, true, true) })
+		out := captureStderr(t, func() { warnIfMultipleAuthSources("", "", false, true, true) })
 		assert.Contains(t, out, "federation env")
 		assert.Contains(t, out, "active profile (active_config)")
 		assert.Contains(t, out, "using federation env per precedence")
@@ -425,20 +425,20 @@ func TestMultiAuthWarning(t *testing.T) {
 
 	t.Run("explicit profile beats federation", func(t *testing.T) {
 		reset()
-		out := captureStderr(t, func() { warnIfMultipleAuthSources(false, false, true, true, false) })
+		out := captureStderr(t, func() { warnIfMultipleAuthSources("", "", true, true, false) })
 		assert.Contains(t, out, "using profile from --profile / ANTHROPIC_PROFILE per precedence")
 	})
 
 	t.Run("single source is silent", func(t *testing.T) {
 		reset()
-		out := captureStderr(t, func() { warnIfMultipleAuthSources(true, false, false, false, false) })
+		out := captureStderr(t, func() { warnIfMultipleAuthSources("--api-key / ANTHROPIC_API_KEY", "", false, false, false) })
 		assert.Empty(t, out)
 	})
 
 	t.Run("emits once", func(t *testing.T) {
 		reset()
-		first := captureStderr(t, func() { warnIfMultipleAuthSources(false, true, true, true, false) })
-		second := captureStderr(t, func() { warnIfMultipleAuthSources(false, true, true, true, false) })
+		first := captureStderr(t, func() { warnIfMultipleAuthSources("", "--auth-token / ANTHROPIC_AUTH_TOKEN", true, true, false) })
+		second := captureStderr(t, func() { warnIfMultipleAuthSources("", "--auth-token / ANTHROPIC_AUTH_TOKEN", true, true, false) })
 		assert.NotEmpty(t, first)
 		assert.Empty(t, second)
 	})
@@ -572,7 +572,9 @@ func TestResolveOAuthOption_Federation(t *testing.T) {
 // TestLoadProfileFillsClientIDDefault verifies that when a user_oauth profile
 // config omits client_id (the bootstrap-only-if-set case), the CLI fills in
 // oauthClientIDProd at request time so the SDK's refresh path has what it
-// needs. A non-empty client_id is left untouched.
+// needs. A non-empty client_id is left untouched, and an empty one stays empty
+// when the credentials hold no refresh_token (a hand-authored static-token
+// profile).
 func TestLoadProfileFillsClientIDDefault(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("ANTHROPIC_CONFIG_DIR", dir)
@@ -580,20 +582,20 @@ func TestLoadProfileFillsClientIDDefault(t *testing.T) {
 	clearEnv(t, "ANTHROPIC_API_KEY")
 	clearEnv(t, "ANTHROPIC_AUTH_TOKEN")
 
-	seed := func(name, clientID string) {
+	seed := func(name, clientID, refreshToken string) {
 		require.NoError(t, config.SaveProfile(dir, name, &config.Config{
 			AuthenticationInfo: &config.AuthenticationInfo{
 				Type: config.AuthenticationTypeUserOAuth, UserOAuth: &config.UserOAuth{ClientID: clientID},
 			},
 		}))
 		require.NoError(t, config.WriteCredentials(config.ProfileCredentialsPath(dir, name),
-			config.Credentials{AccessToken: "tok"}))
+			config.Credentials{AccessToken: "tok", RefreshToken: refreshToken}))
 		require.NoError(t, config.SetActiveProfile(dir, name))
 	}
 
 	t.Run("empty client_id gets prod default and warns once", func(t *testing.T) {
 		resetWarnOnce(t)
-		seed("noclient", "")
+		seed("noclient", "", "rt")
 		var cfg *config.Config
 		out := captureStderr(t, func() { cfg, _ = loadProfileIfUsable(nil) })
 		require.NotNil(t, cfg)
@@ -607,11 +609,21 @@ func TestLoadProfileFillsClientIDDefault(t *testing.T) {
 
 	t.Run("explicit client_id preserved without warning", func(t *testing.T) {
 		resetWarnOnce(t)
-		seed("withclient", "custom-client")
+		seed("withclient", "custom-client", "rt")
 		var cfg *config.Config
 		out := captureStderr(t, func() { cfg, _ = loadProfileIfUsable(nil) })
 		require.NotNil(t, cfg)
 		assert.Equal(t, "custom-client", cfg.AuthenticationInfo.UserOAuth.ClientID)
+		assert.Empty(t, out)
+	})
+
+	t.Run("static token: empty client_id without refresh_token stays empty", func(t *testing.T) {
+		resetWarnOnce(t)
+		seed("static", "", "")
+		var cfg *config.Config
+		out := captureStderr(t, func() { cfg, _ = loadProfileIfUsable(nil) })
+		require.NotNil(t, cfg)
+		assert.Empty(t, cfg.AuthenticationInfo.UserOAuth.ClientID)
 		assert.Empty(t, out)
 	})
 }
@@ -1562,11 +1574,12 @@ func TestAuthLoginAcceptsWorkspaceFromTokenResponse(t *testing.T) {
 		Workspace: tokenWorkspace{ID: "wrkspc_picker", Name: "Picker Workspace"},
 	})
 
-	u, _, err := driveLoginWithArgs(t, []string{"auth", "login", "--no-browser",
+	u, out, err := driveLoginWithArgs(t, []string{"auth", "login", "--no-browser",
 		"--callback-port", "0", "--base-url", srv.URL, "--profile", "fresh"})
 	require.NoError(t, err)
 	assert.Empty(t, u.Query().Get("workspace_id"),
 		"workspace_id must be omitted so Console renders the picker")
+	assert.Contains(t, out, `workspace:    "Picker Workspace" (wrkspc_picker)`)
 
 	// Picker-resolved workspace must land in the profile config and credentials.
 	var cfg map[string]any
@@ -1580,10 +1593,12 @@ func TestAuthLoginAcceptsWorkspaceFromTokenResponse(t *testing.T) {
 	assert.Equal(t, "Picker Workspace", creds["workspace_name"])
 }
 
-// TestAuthLoginRequiresWorkspaceFromSomewhere: with no flag, no stored value,
-// AND a token response that omits the workspace block (older backend or a
-// federation token) we error rather than write a profile with empty workspace.
-func TestAuthLoginRequiresWorkspaceFromSomewhere(t *testing.T) {
+// TestAuthLoginSucceedsWithoutWorkspace: a workspace binding is optional. With
+// no flag, no stored value, and a token response that omits the workspace
+// block, login succeeds and writes a profile and credentials with no
+// workspace_id (so no anthropic-workspace-id header is sent), and the success
+// summary says how to target one later.
+func TestAuthLoginSucceedsWithoutWorkspace(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("ANTHROPIC_CONFIG_DIR", dir)
 	clearEnv(t, "ANTHROPIC_PROFILE")
@@ -1591,15 +1606,94 @@ func TestAuthLoginRequiresWorkspaceFromSomewhere(t *testing.T) {
 
 	srv := newTokenServer(t, tokenResponse{
 		AccessToken: "tok", RefreshToken: "rt", ExpiresIn: 600,
-		// no Workspace block
+		Organization: tokenOrganization{UUID: "org-NOWS", Name: "No WS Org"},
+		Account:      tokenAccount{EmailAddress: "admin@example.com"},
 	})
 
-	_, _, err := driveLoginWithArgs(t, []string{"auth", "login", "--no-browser",
+	u, out, err := driveLoginWithArgs(t, []string{"auth", "login", "--no-browser",
 		"--callback-port", "0", "--base-url", srv.URL, "--profile", "fresh"})
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "no workspace bound")
-	assert.NoFileExists(t, config.ProfilePath(dir, "fresh"),
-		"nothing written when no workspace can be resolved")
+	require.NoError(t, err, "login must not require a workspace binding")
+	assert.Empty(t, u.Query().Get("workspace_id"),
+		"workspace_id must be omitted from /oauth/authorize when none is resolved")
+
+	var cfg map[string]any
+	require.NoError(t, json.Unmarshal(mustRead(t, config.ProfilePath(dir, "fresh")), &cfg))
+	_, hasWs := cfg["workspace_id"]
+	assert.False(t, hasWs, "profile config must omit workspace_id when the token is unbound")
+	assert.Equal(t, "org-NOWS", cfg["organization_id"])
+
+	var creds map[string]any
+	require.NoError(t, json.Unmarshal(mustRead(t, config.ProfileCredentialsPath(dir, "fresh")), &creds))
+	assert.Equal(t, "tok", creds["access_token"])
+	_, hasWs = creds["workspace_id"]
+	assert.False(t, hasWs, "credentials must omit workspace_id when the token is unbound")
+
+	assert.Contains(t, out, "✓ Logged in to No WS Org as admin@example.com")
+	assert.Contains(t, out, "workspace:    (none)")
+	assert.Contains(t, out, "ant profile set workspace_id <id> --profile fresh")
+	assert.NotContains(t, out, "no workspace bound")
+
+	t.Run("re-login on the unbound profile stays quiet", func(t *testing.T) {
+		before := mustRead(t, config.ProfilePath(dir, "fresh"))
+		_, out, err := driveLoginWithArgs(t, []string{"auth", "login", "--no-browser",
+			"--callback-port", "0", "--base-url", srv.URL, "--profile", "fresh"})
+		require.NoError(t, err)
+		assert.NotContains(t, out, "Token bound to workspace",
+			"no drift messaging when neither the profile nor the token has a workspace")
+		assert.Equal(t, string(before), string(mustRead(t, config.ProfilePath(dir, "fresh"))),
+			"re-login must not rewrite configs/<profile>.json")
+	})
+}
+
+// TestAuthStatusNoWorkspace pins how `auth status` renders a profile with no
+// workspace bound anywhere (neither profile config nor credentials): a
+// server-side-default row, not an error or an empty section.
+func TestAuthStatusNoWorkspace(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("ANTHROPIC_CONFIG_DIR", dir)
+	clearEnv(t, "ANTHROPIC_PROFILE")
+	clearEnv(t, "ANTHROPIC_BASE_URL")
+	clearEnv(t, "ANTHROPIC_WORKSPACE_ID")
+	require.NoError(t, config.SaveProfile(dir, "default", &config.Config{
+		AuthenticationInfo: &config.AuthenticationInfo{Type: config.AuthenticationTypeUserOAuth, UserOAuth: &config.UserOAuth{}},
+		OrganizationID:     "org-NOWS",
+	}))
+	exp := time.Now().Add(time.Hour)
+	require.NoError(t, config.WriteCredentials(config.ProfileCredentialsPath(dir, "default"),
+		config.Credentials{AccessToken: "sk-ant-oat01-X", ExpiresAt: &exp, OrganizationUUID: "org-NOWS", OrganizationName: "No WS Org"}))
+
+	out, err := runStatus(t)
+	require.NoError(t, err)
+	assert.Contains(t, out, "Workspace")
+	assert.Contains(t, out, "Server-side default")
+	assert.NotContains(t, out, "Active token workspace")
+	assert.NotContains(t, out, "Profile workspace_id")
+}
+
+// TestAuthStatusWorkspaceFlagWins pins that auth status reports the
+// --workspace-id / ANTHROPIC_WORKSPACE_ID value as the effective workspace,
+// since that is what sets the anthropic-workspace-id header at request time,
+// and demotes the token's bound workspace to an informational row.
+func TestAuthStatusWorkspaceFlagWins(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("ANTHROPIC_CONFIG_DIR", dir)
+	clearEnv(t, "ANTHROPIC_PROFILE")
+	clearEnv(t, "ANTHROPIC_BASE_URL")
+	t.Setenv("ANTHROPIC_WORKSPACE_ID", "wrkspc_env")
+	require.NoError(t, config.SaveProfile(dir, "default", &config.Config{
+		AuthenticationInfo: &config.AuthenticationInfo{Type: config.AuthenticationTypeUserOAuth, UserOAuth: &config.UserOAuth{}},
+		OrganizationID:     "org-X",
+		WorkspaceID:        "wrkspc_tok",
+	}))
+	exp := time.Now().Add(time.Hour)
+	require.NoError(t, config.WriteCredentials(config.ProfileCredentialsPath(dir, "default"),
+		config.Credentials{AccessToken: "sk-ant-oat01-X", ExpiresAt: &exp, OrganizationUUID: "org-X", WorkspaceID: "wrkspc_tok", WorkspaceName: "Tok WS"}))
+
+	out, err := runStatus(t)
+	require.NoError(t, err)
+	assert.Regexp(t, `\(active\) \* --workspace-id / ANTHROPIC_WORKSPACE_ID\s+wrkspc_env`, out)
+	assert.Regexp(t, `(?m)^\s+\* Active token workspace\s+wrkspc_tok \("Tok WS"\)`, out)
+	assert.NotContains(t, out, "Server-side default")
 }
 
 // TestResolveWorkspaceIDPrecedence pins the lookup chain
@@ -1689,7 +1783,7 @@ func TestAuthLogoutAllWithoutActiveConfig(t *testing.T) {
 // organization-id/federation inputs). None are set in these tests; the flags
 // exist so root.String/root.IsSet resolve to zero values rather than depend
 // on undefined-flag behaviour.
-func runStatus(t *testing.T) (string, error) {
+func runStatus(t *testing.T, globalArgs ...string) (string, error) {
 	t.Helper()
 	root := &cli.Command{
 		Name: "ant",
@@ -1697,12 +1791,15 @@ func runStatus(t *testing.T) (string, error) {
 			&cli.StringFlag{Name: "profile", Sources: cli.EnvVars("ANTHROPIC_PROFILE")},
 			&cli.StringFlag{Name: "api-key"},
 			&cli.StringFlag{Name: "auth-token"},
+			&cli.BoolFlag{Name: "api-key-stdin"},
+			&cli.BoolFlag{Name: "auth-token-stdin"},
 			&cli.StringFlag{Name: "base-url"},
 			&cli.StringFlag{Name: "organization-id"},
 			&cli.StringFlag{Name: "identity-token"},
 			&cli.StringFlag{Name: "identity-token-file"},
 			&cli.StringFlag{Name: "federation-rule"},
 			&cli.StringFlag{Name: "service-account-id"},
+			&cli.StringFlag{Name: "workspace-id", Sources: cli.EnvVars("ANTHROPIC_WORKSPACE_ID")},
 		},
 		Commands: []*cli.Command{{
 			Name: "auth", Commands: []*cli.Command{{
@@ -1711,7 +1808,7 @@ func runStatus(t *testing.T) (string, error) {
 		}},
 	}
 	return captureStdout(t, func() error {
-		return root.Run(context.Background(), []string{"ant", "auth", "status"})
+		return root.Run(context.Background(), append(append([]string{"ant"}, globalArgs...), "auth", "status"))
 	})
 }
 

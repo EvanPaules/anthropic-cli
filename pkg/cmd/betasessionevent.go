@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -26,37 +24,36 @@ var betaSessionsEventsList = cli.Command{
 		},
 		&requestflag.Flag[any]{
 			Name:      "created-at-gt",
-			Usage:     "Return events created after this time (exclusive).",
+			Usage:     "Return events created after this time (exclusive). Compared against the event's `processed_at` value.",
 			QueryPath: "created_at[gt]",
 		},
 		&requestflag.Flag[any]{
 			Name:      "created-at-gte",
-			Usage:     "Return events created at or after this time (inclusive).",
+			Usage:     "Return events created at or after this time (inclusive). Compared against the event's `processed_at` value.",
 			QueryPath: "created_at[gte]",
 		},
 		&requestflag.Flag[any]{
 			Name:      "created-at-lt",
-			Usage:     "Return events created before this time (exclusive).",
+			Usage:     "Return events created before this time (exclusive). Compared against the event's `processed_at` value.",
 			QueryPath: "created_at[lt]",
 		},
 		&requestflag.Flag[any]{
 			Name:      "created-at-lte",
-			Usage:     "Return events created at or before this time (inclusive).",
+			Usage:     "Return events created at or before this time (inclusive). Compared against the event's `processed_at` value.",
 			QueryPath: "created_at[lte]",
 		},
 		&requestflag.Flag[int64]{
 			Name:      "limit",
-			Usage:     "Query parameter for limit",
 			QueryPath: "limit",
 		},
 		&requestflag.Flag[string]{
 			Name:      "order",
-			Usage:     "Sort direction for results, ordered by created_at. Defaults to asc (chronological).",
+			Usage:     "Sort direction for results, ordered by the event's `processed_at`. Defaults to `asc` (chronological).",
 			QueryPath: "order",
 		},
 		&requestflag.Flag[string]{
 			Name:      "page",
-			Usage:     "Opaque pagination cursor from a previous response's next_page.",
+			Usage:     "Opaque pagination cursor from a previous response's `next_page`.",
 			QueryPath: "page",
 		},
 		&requestflag.Flag[[]string]{
@@ -69,6 +66,11 @@ var betaSessionsEventsList = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
@@ -78,7 +80,7 @@ var betaSessionsEventsList = cli.Command{
 	HideHelpCommand: true,
 }
 
-var betaSessionsEventsSend = cli.Command{
+var betaSessionsEventsSend = requestflag.WithInnerFlags(cli.Command{
 	Name:    "send",
 	Usage:   "Send Events",
 	Suggest: true,
@@ -99,10 +101,71 @@ var betaSessionsEventsSend = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaSessionsEventsSend,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"event": {
+		&requestflag.InnerFlag[string]{
+			Name:       "event.type",
+			Usage:      `Allowed values: "user.message", "user.interrupt", "user.tool_confirmation", "user.custom_tool_result", "user.define_outcome", "user.tool_result", "system.message".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "event.content",
+			InnerField: "content",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "event.custom-tool-use-id",
+			Usage:      "The id of the `agent.custom_tool_use` event this result corresponds to, which can be found in the last `session.status_idle` [event's](https://platform.claude.com/docs/en/api/beta/sessions/events/list#beta_managed_agents_session_requires_action.event_ids) `stop_reason.event_ids` field.",
+			InnerField: "custom_tool_use_id",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "event.deny-message",
+			Usage:      "Optional message providing context for a 'deny' decision. Only allowed when result is 'deny'.",
+			InnerField: "deny_message",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "event.description",
+			Usage:      "What the agent should produce. This is the task specification.",
+			InnerField: "description",
+		},
+		&requestflag.InnerFlag[*bool]{
+			Name:       "event.is-error",
+			Usage:      "Whether the tool execution resulted in an error.",
+			InnerField: "is_error",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "event.max-iterations",
+			Usage:      "Eval→revision cycles before giving up. Default 3, max 20.",
+			InnerField: "max_iterations",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "event.result",
+			Usage:      "The confirmation result: 'allow' or 'deny'.",
+			InnerField: "result",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "event.rubric",
+			InnerField: "rubric",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "event.session-thread-id",
+			Usage:      "If absent, interrupts every non-archived thread in a multiagent session (or the primary alone in a single-agent session). If present, interrupts only the named thread.",
+			InnerField: "session_thread_id",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "event.tool-use-id",
+			Usage:      "The id of the `agent.tool_use` or `agent.mcp_tool_use` event this result corresponds to, which can be found in the last `session.status_idle` [event's](https://platform.claude.com/docs/en/api/beta/sessions/events/list#beta_managed_agents_session_requires_action.event_ids) `stop_reason.event_ids` field.",
+			InnerField: "tool_use_id",
+		},
+	},
+})
 
 var betaSessionsEventsStream = cli.Command{
 	Name:    "stream",
@@ -123,6 +186,11 @@ var betaSessionsEventsStream = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",

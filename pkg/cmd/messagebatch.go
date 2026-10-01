@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -30,6 +28,11 @@ var messagesBatchesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:      "The user profile ID to attribute the requests in this batch to. Use when acting on behalf of a party other than your organization. Requires the `user-profiles` beta header. Applies to every request in the batch; an individual request whose `user_profile_id` body field conflicts with this header is errored.",
 			HeaderPath: "anthropic-user-profile-id",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleMessagesBatchesCreate,
 	HideHelpCommand: true,
@@ -59,6 +62,11 @@ var messagesBatchesRetrieve = cli.Command{
 			Required:  true,
 			PathParam: "message_batch_id",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleMessagesBatchesRetrieve,
 	HideHelpCommand: true,
@@ -85,6 +93,11 @@ var messagesBatchesList = cli.Command{
 			Default:   20,
 			QueryPath: "limit",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
@@ -105,6 +118,11 @@ var messagesBatchesDelete = cli.Command{
 			Required:  true,
 			PathParam: "message_batch_id",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleMessagesBatchesDelete,
 	HideHelpCommand: true,
@@ -121,6 +139,11 @@ var messagesBatchesCancel = cli.Command{
 			Required:  true,
 			PathParam: "message_batch_id",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleMessagesBatchesCancel,
 	HideHelpCommand: true,
@@ -136,6 +159,11 @@ var messagesBatchesResults = cli.Command{
 			Usage:     "ID of the Message Batch.",
 			Required:  true,
 			PathParam: "message_batch_id",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
@@ -209,9 +237,16 @@ func handleMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error 
 		return err
 	}
 
+	params := anthropic.MessageBatchGetParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Messages.Batches.Get(ctx, cmd.Value("message-batch-id").(string), options...)
+	_, err = client.Messages.Batches.Get(
+		ctx,
+		cmd.Value("message-batch-id").(string),
+		params,
+		options...,
+	)
 	if err != nil {
 		return err
 	}
@@ -315,9 +350,16 @@ func handleMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	params := anthropic.MessageBatchDeleteParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Messages.Batches.Delete(ctx, cmd.Value("message-batch-id").(string), options...)
+	_, err = client.Messages.Batches.Delete(
+		ctx,
+		cmd.Value("message-batch-id").(string),
+		params,
+		options...,
+	)
 	if err != nil {
 		return err
 	}
@@ -357,9 +399,16 @@ func handleMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	params := anthropic.MessageBatchCancelParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Messages.Batches.Cancel(ctx, cmd.Value("message-batch-id").(string), options...)
+	_, err = client.Messages.Batches.Cancel(
+		ctx,
+		cmd.Value("message-batch-id").(string),
+		params,
+		options...,
+	)
 	if err != nil {
 		return err
 	}
@@ -399,10 +448,17 @@ func handleMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	params := anthropic.MessageBatchResultsParams{}
+
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	stream := client.Messages.Batches.ResultsStreaming(ctx, cmd.Value("message-batch-id").(string), options...)
+	stream := client.Messages.Batches.ResultsStreaming(
+		ctx,
+		cmd.Value("message-batch-id").(string),
+		params,
+		options...,
+	)
 	maxItems := int64(-1)
 	if cmd.IsSet("max-items") {
 		maxItems = cmd.Value("max-items").(int64)

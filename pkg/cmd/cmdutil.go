@@ -64,9 +64,19 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 		option.WithHeader("X-Stainless-Runtime", "cli"),
 		option.WithHeader("X-Stainless-CLI-Command", cmd.FullName()),
 	}
+	// Credential flags are global; read them from the root so a generated
+	// subcommand's same-named local flag (e.g. a --service-account-id path
+	// param) can't shadow them under urfave/cli's leaf-first lookup.
+	root := cmd.Root()
+	warnIfCredentialOnCommandLine(os.Stderr)
+	if err := applyStdinCredential(root); err != nil {
+		// TODO: same os.Exit wart as the OAuth resolution failure below.
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 	// Credential precedence mirrors the WIF User Guide's "Credential resolution" section:
-	//   1. --api-key / ANTHROPIC_API_KEY         (flag or env; doc tiers 1+2)
-	//   2. --auth-token / ANTHROPIC_AUTH_TOKEN   (flag or env; doc tiers 1+2)
+	//   1. --api-key-stdin / ANTHROPIC_API_KEY (or deprecated --api-key)          (doc tiers 1+2)
+	//   2. --auth-token-stdin / ANTHROPIC_AUTH_TOKEN (or deprecated --auth-token) (doc tiers 1+2)
 	//   3. profile named by --profile / ANTHROPIC_PROFILE (explicit)
 	//   4. ANTHROPIC_FEDERATION_RULE_ID + ANTHROPIC_ORGANIZATION_ID +
 	//      ANTHROPIC_IDENTITY_TOKEN[_FILE]
@@ -74,18 +84,19 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 	// The explicit/implicit profile split means: a profile you named beats
 	// federation env vars (you asked for it), but federation env vars beat a
 	// profile that just happened to be lying around in active_config.
-	apiKeySet := cmd.IsSet("api-key")
-	authTokenSet := cmd.IsSet("auth-token")
-	cfg, profileExplicit := loadProfileIfUsable(cmd)
-	fed := federation{
-		Assertion:        cmd.String("identity-token"),
-		AssertionFile:    cmd.String("identity-token-file"),
-		Rule:             cmd.String("federation-rule"),
-		OrganizationID:   cmd.String("organization-id"),
-		ServiceAccountID: cmd.String("service-account-id"),
-	}
+	apiKeySet := root.IsSet("api-key")
+	authTokenSet := root.IsSet("auth-token")
+	cfg, profileExplicit := loadProfileIfUsable(root)
+	fed := federationFromRoot(root)
 	fedAnySet := fed.AnySet()
-	warnIfMultipleAuthSources(apiKeySet, authTokenSet, cfg != nil && profileExplicit, fedAnySet, cfg != nil && !profileExplicit)
+	apiKeySrc, authTokenSrc := "", ""
+	if apiKeySet {
+		apiKeySrc = credentialSourceLabel(root, "api-key")
+	}
+	if authTokenSet {
+		authTokenSrc = credentialSourceLabel(root, "auth-token")
+	}
+	warnIfMultipleAuthSources(apiKeySrc, authTokenSrc, cfg != nil && profileExplicit, fedAnySet, cfg != nil && !profileExplicit)
 
 	useProfile := func() {
 		opts = append(opts, option.WithConfigQuiet(cfg))
@@ -98,15 +109,15 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 			opts = append(opts, option.WithHeaderAdd("anthropic-beta", betaUserOAuth))
 		}
 	}
-	if cmd.IsSet("webhook-key") {
-		opts = append(opts, option.WithWebhookKey(cmd.String("webhook-key")))
+	if root.IsSet("webhook-key") {
+		opts = append(opts, option.WithWebhookKey(root.String("webhook-key")))
 	}
 
 	switch {
 	case apiKeySet:
-		opts = append(opts, option.WithAPIKey(cmd.String("api-key")))
+		opts = append(opts, option.WithAPIKey(root.String("api-key")))
 	case authTokenSet:
-		opts = append(opts, option.WithAuthToken(cmd.String("auth-token")))
+		opts = append(opts, option.WithAuthToken(root.String("auth-token")))
 	case cfg != nil && profileExplicit:
 		useProfile()
 	case fedAnySet:
@@ -137,7 +148,9 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 // credential source is configured, naming the sources and the precedence
 // winner. No secret values are printed. Order matches the User Guide's
 // 5-tier precedence (explicit profile beats federation; implicit doesn't).
-func warnIfMultipleAuthSources(apiKey, authToken, profileExplicit, federation, profileImplicit bool) {
+// apiKeySrc / authTokenSrc are the source labels for those tiers ("" when
+// unset) so a stdin-supplied credential isn't reported as --api-key.
+func warnIfMultipleAuthSources(apiKeySrc, authTokenSrc string, profileExplicit, federation, profileImplicit bool) {
 	type src struct {
 		on   bool
 		name string
@@ -147,8 +160,8 @@ func warnIfMultipleAuthSources(apiKey, authToken, profileExplicit, federation, p
 	// orderings derive from the precedence comment block at the top of
 	// getDefaultRequestOptions; if you reorder one, reorder all three.
 	all := []src{
-		{apiKey, "--api-key / ANTHROPIC_API_KEY"},
-		{authToken, "--auth-token / ANTHROPIC_AUTH_TOKEN"},
+		{apiKeySrc != "", apiKeySrc},
+		{authTokenSrc != "", authTokenSrc},
 		{profileExplicit, "profile from --profile / ANTHROPIC_PROFILE"},
 		{federation, "federation env"},
 		{profileImplicit, "active profile (active_config)"},
@@ -175,7 +188,7 @@ func warnIfMultipleAuthSources(apiKey, authToken, profileExplicit, federation, p
 // with Sources: ANTHROPIC_PROFILE, so IsSet covers both; the LookupEnv branch
 // is a defensive fallback for callers passing a Command not yet Run() (or nil).
 func profileIsExplicit(cmd *cli.Command) bool {
-	if cmd != nil && cmd.IsSet("profile") {
+	if cmd != nil && cmd.Root().IsSet("profile") {
 		return true
 	}
 	_, ok := os.LookupEnv("ANTHROPIC_PROFILE")
@@ -214,11 +227,16 @@ func loadProfileIfUsable(cmd *cli.Command) (*config.Config, bool) {
 		}
 		// Belt-and-suspenders: profiles written before bootstrap always wrote
 		// client_id (or hand-authored ones) may omit it. Fill in the prod
-		// default so the SDK's refresh path doesn't fail. New bootstraps
-		// always write it (cmd_auth.go), so this is a back-compat shim.
-		// config.LoadProfile returns a fresh pointer per call, so mutating
-		// the returned struct here doesn't leak across callers.
-		if cfg.AuthenticationInfo.UserOAuth != nil && cfg.AuthenticationInfo.UserOAuth.ClientID == "" {
+		// default so the SDK's refresh path doesn't fail — but only when the
+		// credentials can actually refresh: an empty client_id with no
+		// refresh_token is the SDK's static-token profile (a hand-authored
+		// bearer token for a gateway or proxy in front of the API), and
+		// defaulting would push it onto the refresh path and break it. New
+		// bootstraps always write client_id (cmd_auth.go), so this is a
+		// back-compat shim. config.LoadProfile returns a fresh pointer per
+		// call, so mutating the returned struct here doesn't leak across
+		// callers.
+		if cfg.AuthenticationInfo.UserOAuth != nil && cfg.AuthenticationInfo.UserOAuth.ClientID == "" && credentialsCanRefresh(credsPath) {
 			cfg.AuthenticationInfo.UserOAuth.ClientID = oauthClientIDProd
 			clientIDDefaultedOnce.Do(func() {
 				fmt.Fprintln(os.Stderr,
@@ -227,6 +245,23 @@ func loadProfileIfUsable(cmd *cli.Command) (*config.Config, bool) {
 		}
 	}
 	return cfg, explicit
+}
+
+// credentialsCanRefresh reports whether the profile's credentials file holds
+// a refresh_token. Unreadable or malformed files say yes so the legacy
+// defaulting path (and its clearer downstream errors) still runs.
+func credentialsCanRefresh(path string) bool {
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return true
+	}
+	var cred struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+	if err := json.Unmarshal(raw, &cred); err != nil {
+		return true
+	}
+	return cred.RefreshToken != ""
 }
 
 // resolveOAuthOption returns request options for the federation credential

@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -19,6 +17,7 @@ func TestBetaVaultsCredentialsCreate(t *testing.T) {
 			"--display-name", "Example credential",
 			"--metadata", "{environment: production}",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -38,6 +37,7 @@ func TestBetaVaultsCredentialsCreate(t *testing.T) {
 			"beta:vaults:credentials", "create",
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -51,6 +51,7 @@ func TestBetaVaultsCredentialsRetrieve(t *testing.T) {
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
 			"--credential-id", "vcrd_011CZkZEMt8gZan2iYOQfSkw",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -67,6 +68,7 @@ func TestBetaVaultsCredentialsUpdate(t *testing.T) {
 			"--display-name", "Example credential",
 			"--metadata", "{environment: production}",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -93,12 +95,13 @@ func TestBetaVaultsCredentialsUpdate(t *testing.T) {
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
 			"--credential-id", "vcrd_011CZkZEMt8gZan2iYOQfSkw",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
 
 func TestBetaVaultsCredentialsList(t *testing.T) {
-	t.Skip("buildURL drops path-level query params (SDK-4349)")
+	t.Skip("buildURL drops path-level query params")
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
@@ -110,6 +113,7 @@ func TestBetaVaultsCredentialsList(t *testing.T) {
 			"--limit", "0",
 			"--page", "page",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -123,6 +127,7 @@ func TestBetaVaultsCredentialsDelete(t *testing.T) {
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
 			"--credential-id", "vcrd_011CZkZEMt8gZan2iYOQfSkw",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -136,6 +141,7 @@ func TestBetaVaultsCredentialsArchive(t *testing.T) {
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
 			"--credential-id", "vcrd_011CZkZEMt8gZan2iYOQfSkw",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -150,6 +156,7 @@ func TestBetaVaultsCredentialsMCPOAuthValidate(t *testing.T) {
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
 			"--credential-id", "vcrd_011CZkZEMt8gZan2iYOQfSkw",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

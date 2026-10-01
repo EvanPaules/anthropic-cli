@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -14,15 +12,29 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaUserProfilesCreate = cli.Command{
+var betaUserProfilesCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "create",
 	Usage:   "Create User Profile",
 	Suggest: true,
 	Flags: []cli.Flag{
+		&requestflag.Flag[string]{
+			Name:     "access-type",
+			Usage:    "How the platform uses the API for this entity. `application` (default): the profile represents an individual end-user of the platform's product. `passthrough`: the profile identifies a company the platform resells Claude access to.",
+			BodyPath: "access_type",
+		},
 		&requestflag.Flag[*string]{
 			Name:     "external-id",
-			Usage:    "Platform's own identifier for this user. Not enforced unique. Maximum 255 characters.",
+			Usage:    "Platform's own identifier for this user. Not enforced unique. Maximum 255 characters. Accepted under the `user-profiles-2026-03-24` and `user-profiles-2026-08-18` beta headers; under `user-profiles-2026-09-04` send `external_user_details.reference_id` instead.",
 			BodyPath: "external_id",
+		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "external-user-details",
+			BodyPath: "external_user_details",
+		},
+		&requestflag.Flag[any]{
+			Name:     "external-user-onboarded-at",
+			Usage:    "When the entity this profile represents opened its account with the platform, in RFC 3339 format: for an `application` profile, when the end-user signed up; for a `passthrough` profile, when the company became the platform's customer. Must be a complete timestamp no more than 1 minute in the future. Optional. Accepted under the `user-profiles-2026-08-18` beta header; under `user-profiles-2026-09-04` send `external_user_details.onboarded_at` instead.",
+			BodyPath: "external_user_onboarded_at",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
@@ -31,23 +43,61 @@ var betaUserProfilesCreate = cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "name",
-			Usage:    "Display name of the entity this profile represents. Required when relationship is `resold` (the resold-to company's name); optional otherwise. Maximum 255 characters.",
+			Usage:    "Optional for all profiles. Real-world name of the entity this profile represents (company or individual); for a company the platform resells Claude access to (`access_type` `passthrough`), that company's name where known. Maximum 255 characters.",
 			BodyPath: "name",
-		},
-		&requestflag.Flag[string]{
-			Name:     "relationship",
-			Usage:    "How the entity behind a user profile relates to the platform that owns the API key. `external`: an individual end-user of the platform. `resold`: a company the platform resells Claude access to. `internal`: the platform's own usage.",
-			BodyPath: "relationship",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaUserProfilesCreate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"external-user-details": {
+		&requestflag.InnerFlag[*string]{
+			Name:       "external-user-details.account-status",
+			Usage:      "The status of the entity's account on the platform: `active`, `suspended` or `blocked`.",
+			InnerField: "account_status",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "external-user-details.country",
+			Usage:      "The country of the entity (not of the platform), as the platform determines it: an ISO 3166-1 alpha-2 code in upper case, for example `US`. Only the form, two uppercase ASCII letters, is checked.",
+			InnerField: "country",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "external-user-details.email-hash",
+			Usage:      "A hash of the entity's email address, computed by the platform. Anthropic treats it as an opaque string and does not prescribe the hash function. 1 to 255 characters.",
+			InnerField: "email_hash",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "external-user-details.entity-type",
+			Usage:      "What kind of entity the profile represents: `individual`, `business`, `non_profit` or `government`.",
+			InnerField: "entity_type",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "external-user-details.name-hash",
+			Usage:      "A hash of the entity's name, computed by the platform. Anthropic treats it as an opaque string and does not prescribe the hash function. 1 to 255 characters.",
+			InnerField: "name_hash",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "external-user-details.onboarded-at",
+			Usage:      "When the entity opened its account with the platform, in RFC 3339 format: for an `application` profile, when the end-user signed up; for a `passthrough` profile, when the company became the platform's customer. Must be a complete timestamp no more than 1 minute in the future.",
+			InnerField: "onboarded_at",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "external-user-details.reference-id",
+			Usage:      "The platform's own reference for the entity, for example the key of the end-user's row in the platform's database. Not interpreted by Anthropic and not enforced unique. 1 to 255 characters.",
+			InnerField: "reference_id",
+		},
+	},
+})
 
 var betaUserProfilesRetrieve = cli.Command{
 	Name:    "retrieve",
@@ -56,6 +106,7 @@ var betaUserProfilesRetrieve = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "user-profile-id",
+			Usage:     "The ID of the user profile to get (`uprof_...`).",
 			Required:  true,
 			PathParam: "user_profile_id",
 		},
@@ -64,25 +115,45 @@ var betaUserProfilesRetrieve = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaUserProfilesRetrieve,
 	HideHelpCommand: true,
 }
 
-var betaUserProfilesUpdate = cli.Command{
+var betaUserProfilesUpdate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "update",
 	Usage:   "Update User Profile",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "user-profile-id",
+			Usage:     "The ID of the user profile to update (`uprof_...`).",
 			Required:  true,
 			PathParam: "user_profile_id",
 		},
 		&requestflag.Flag[*string]{
+			Name:     "access-type",
+			Usage:    "If present, replaces the stored access type. Omit to leave unchanged.",
+			BodyPath: "access_type",
+		},
+		&requestflag.Flag[*string]{
 			Name:     "external-id",
-			Usage:    "If present, replaces the stored external_id. Omit to leave unchanged. Maximum 255 characters.",
+			Usage:    "If present, replaces the stored external_id. Omit to leave unchanged. Maximum 255 characters. Accepted under the `user-profiles-2026-03-24` and `user-profiles-2026-08-18` beta headers; under `user-profiles-2026-09-04` send `external_user_details.reference_id` instead.",
 			BodyPath: "external_id",
+		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "external-user-details",
+			BodyPath: "external_user_details",
+		},
+		&requestflag.Flag[any]{
+			Name:     "external-user-onboarded-at",
+			Usage:    "If present, replaces the stored account creation time. Omit to leave unchanged; once set, the value cannot be cleared and `null` is rejected. Must be a complete RFC 3339 timestamp no more than 1 minute in the future. Accepted under the `user-profiles-2026-08-18` beta header; under `user-profiles-2026-09-04` send `external_user_details.onboarded_at` instead.",
+			BodyPath: "external_user_onboarded_at",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
@@ -94,20 +165,58 @@ var betaUserProfilesUpdate = cli.Command{
 			Usage:    "If present, replaces the stored name. Omit to leave unchanged. Maximum 255 characters.",
 			BodyPath: "name",
 		},
-		&requestflag.Flag[*string]{
-			Name:     "relationship",
-			Usage:    "How the entity behind a user profile relates to the platform that owns the API key. `external`: an individual end-user of the platform. `resold`: a company the platform resells Claude access to. `internal`: the platform's own usage.",
-			BodyPath: "relationship",
-		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaUserProfilesUpdate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"external-user-details": {
+		&requestflag.InnerFlag[*string]{
+			Name:       "external-user-details.account-status",
+			Usage:      "The status of the entity's account on the platform: `active`, `suspended` or `blocked`.",
+			InnerField: "account_status",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "external-user-details.country",
+			Usage:      "The country of the entity (not of the platform), as the platform determines it: an ISO 3166-1 alpha-2 code in upper case, for example `US`. Only the form, two uppercase ASCII letters, is checked.",
+			InnerField: "country",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "external-user-details.email-hash",
+			Usage:      "A hash of the entity's email address, computed by the platform. Anthropic treats it as an opaque string and does not prescribe the hash function. 1 to 255 characters.",
+			InnerField: "email_hash",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "external-user-details.entity-type",
+			Usage:      "What kind of entity the profile represents: `individual`, `business`, `non_profit` or `government`.",
+			InnerField: "entity_type",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "external-user-details.name-hash",
+			Usage:      "A hash of the entity's name, computed by the platform. Anthropic treats it as an opaque string and does not prescribe the hash function. 1 to 255 characters.",
+			InnerField: "name_hash",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "external-user-details.onboarded-at",
+			Usage:      "When the entity opened its account with the platform, in RFC 3339 format: for an `application` profile, when the end-user signed up; for a `passthrough` profile, when the company became the platform's customer. Must be a complete timestamp no more than 1 minute in the future.",
+			InnerField: "onboarded_at",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "external-user-details.reference-id",
+			Usage:      "The platform's own reference for the entity, for example the key of the end-user's row in the platform's database. Not interpreted by Anthropic and not enforced unique. 1 to 255 characters.",
+			InnerField: "reference_id",
+		},
+	},
+})
 
 var betaUserProfilesList = cli.Command{
 	Name:    "list",
@@ -116,23 +225,33 @@ var betaUserProfilesList = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[int64]{
 			Name:      "limit",
-			Usage:     "Query parameter for limit",
+			Usage:     "The maximum number of user profiles to return, from 1 to 100. Defaults to 20.",
 			QueryPath: "limit",
 		},
 		&requestflag.Flag[string]{
 			Name:      "order",
-			Usage:     "Query parameter for order",
+			Usage:     "The sort direction, applied to the field that `order_by` selects. Defaults to `desc`.",
 			QueryPath: "order",
 		},
 		&requestflag.Flag[string]{
+			Name:      "order-by",
+			Usage:     "The field to sort user profiles by, in the direction that `order` sets. Defaults to `created_at`.",
+			QueryPath: "order_by",
+		},
+		&requestflag.Flag[string]{
 			Name:      "page",
-			Usage:     "Query parameter for page",
+			Usage:     "The cursor for the page to return, taken from `next_page` in a previous response.\n\nLeave it out to get the first page.",
 			QueryPath: "page",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
@@ -150,6 +269,7 @@ var betaUserProfilesCreateEnrollmentURL = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "user-profile-id",
+			Usage:     "The ID of the user profile to create an enrollment URL for (`uprof_...`).",
 			Required:  true,
 			PathParam: "user_profile_id",
 		},
@@ -157,6 +277,11 @@ var betaUserProfilesCreateEnrollmentURL = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaUserProfilesCreateEnrollmentURL,

@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -9,7 +7,7 @@ import (
 )
 
 func TestBetaSessionsEventsList(t *testing.T) {
-	t.Skip("buildURL drops path-level query params (SDK-4349)")
+	t.Skip("buildURL drops path-level query params")
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
@@ -24,8 +22,9 @@ func TestBetaSessionsEventsList(t *testing.T) {
 			"--limit", "0",
 			"--order", "asc",
 			"--page", "page",
-			"--type", "string",
+			"--type", "user.message",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -39,6 +38,7 @@ func TestBetaSessionsEventsSend(t *testing.T) {
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -56,6 +56,7 @@ func TestBetaSessionsEventsSend(t *testing.T) {
 			"beta:sessions:events", "send",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -70,6 +71,7 @@ func TestBetaSessionsEventsStream(t *testing.T) {
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--event-delta", "agent.message",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

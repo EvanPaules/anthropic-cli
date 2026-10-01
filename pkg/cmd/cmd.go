@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -129,6 +127,210 @@ func init() {
 				Commands: []*cli.Command{
 					&modelsRetrieve,
 					&modelsList,
+				},
+			},
+			{
+				Name:     "files",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&filesList,
+					&filesDelete,
+					&filesDownload,
+					&filesRetrieveMetadata,
+					&filesUpload,
+				},
+			},
+			{
+				Name:     "skills",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&skillsCreate,
+					&skillsRetrieve,
+					&skillsList,
+					&skillsDelete,
+				},
+			},
+			{
+				Name:     "skills:versions",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&skillsVersionsCreate,
+					&skillsVersionsRetrieve,
+					&skillsVersionsList,
+					&skillsVersionsDelete,
+				},
+			},
+			{
+				Name:     "organization",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationRetrieve,
+				},
+			},
+			{
+				Name:     "organization:api-keys",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationAPIKeysRetrieve,
+					&organizationAPIKeysUpdate,
+					&organizationAPIKeysList,
+				},
+			},
+			{
+				Name:     "organization:external-keys",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationExternalKeysCreate,
+					&organizationExternalKeysRetrieve,
+					&organizationExternalKeysUpdate,
+					&organizationExternalKeysList,
+					&organizationExternalKeysDelete,
+					&organizationExternalKeysValidate,
+				},
+			},
+			{
+				Name:     "organization:federation:issuers",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationFederationIssuersCreate,
+					&organizationFederationIssuersRetrieve,
+					&organizationFederationIssuersUpdate,
+					&organizationFederationIssuersList,
+					&organizationFederationIssuersArchive,
+				},
+			},
+			{
+				Name:     "organization:federation:rules",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationFederationRulesCreate,
+					&organizationFederationRulesRetrieve,
+					&organizationFederationRulesUpdate,
+					&organizationFederationRulesList,
+					&organizationFederationRulesArchive,
+				},
+			},
+			{
+				Name:     "organization:federation:rules:workspaces",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationFederationRulesWorkspacesList,
+					&organizationFederationRulesWorkspacesAdd,
+					&organizationFederationRulesWorkspacesRemove,
+				},
+			},
+			{
+				Name:     "organization:invites",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationInvitesCreate,
+					&organizationInvitesRetrieve,
+					&organizationInvitesList,
+					&organizationInvitesDelete,
+				},
+			},
+			{
+				Name:     "organization:service-accounts",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationServiceAccountsCreate,
+					&organizationServiceAccountsRetrieve,
+					&organizationServiceAccountsUpdate,
+					&organizationServiceAccountsList,
+					&organizationServiceAccountsArchive,
+				},
+			},
+			{
+				Name:     "organization:service-accounts:workspaces",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationServiceAccountsWorkspacesList,
+					&organizationServiceAccountsWorkspacesAdd,
+					&organizationServiceAccountsWorkspacesRemove,
+				},
+			},
+			{
+				Name:     "organization:users",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationUsersRetrieve,
+					&organizationUsersUpdate,
+					&organizationUsersList,
+					&organizationUsersRemove,
+				},
+			},
+			{
+				Name:     "organization:workspaces",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationWorkspacesCreate,
+					&organizationWorkspacesRetrieve,
+					&organizationWorkspacesUpdate,
+					&organizationWorkspacesList,
+					&organizationWorkspacesArchive,
+				},
+			},
+			{
+				Name:     "organization:workspaces:rate-limits",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationWorkspacesRateLimitsList,
+				},
+			},
+			{
+				Name:     "organization:workspaces:members",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationWorkspacesMembersRetrieve,
+					&organizationWorkspacesMembersUpdate,
+					&organizationWorkspacesMembersList,
+					&organizationWorkspacesMembersAdd,
+					&organizationWorkspacesMembersRemove,
+				},
+			},
+			{
+				Name:     "organization:workspaces:service-accounts",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationWorkspacesServiceAccountsRetrieve,
+					&organizationWorkspacesServiceAccountsUpdate,
+					&organizationWorkspacesServiceAccountsList,
+					&organizationWorkspacesServiceAccountsAdd,
+					&organizationWorkspacesServiceAccountsRemove,
+				},
+			},
+			{
+				Name:     "organization:rate-limits",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationRateLimitsList,
+				},
+			},
+			{
+				Name:     "organization:compliance-settings",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationComplianceSettingsRetrieve,
+					&organizationComplianceSettingsUpdate,
 				},
 			},
 			{
@@ -398,6 +600,422 @@ func init() {
 				},
 			},
 			&workerCommand,
+			{
+				Name:     "beta:dreams",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaDreamsCreate,
+					&betaDreamsRetrieve,
+					&betaDreamsList,
+					&betaDreamsArchive,
+					&betaDreamsCancel,
+				},
+			},
+			{
+				Name:     "beta:tunnels",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaTunnelsCreate,
+					&betaTunnelsRetrieve,
+					&betaTunnelsList,
+					&betaTunnelsArchive,
+					&betaTunnelsRevealToken,
+					&betaTunnelsRotateToken,
+				},
+			},
+			{
+				Name:     "beta:tunnels:certificates",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaTunnelsCertificatesCreate,
+					&betaTunnelsCertificatesRetrieve,
+					&betaTunnelsCertificatesList,
+					&betaTunnelsCertificatesArchive,
+				},
+			},
+			{
+				Name:     "beta:organization",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationRetrieve,
+				},
+			},
+			{
+				Name:     "beta:organization:api-keys",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAPIKeysRetrieve,
+					&betaOrganizationAPIKeysUpdate,
+					&betaOrganizationAPIKeysList,
+				},
+			},
+			{
+				Name:     "beta:organization:external-keys",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationExternalKeysCreate,
+					&betaOrganizationExternalKeysRetrieve,
+					&betaOrganizationExternalKeysUpdate,
+					&betaOrganizationExternalKeysList,
+					&betaOrganizationExternalKeysDelete,
+					&betaOrganizationExternalKeysValidate,
+				},
+			},
+			{
+				Name:     "beta:organization:federation:issuers",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationFederationIssuersCreate,
+					&betaOrganizationFederationIssuersRetrieve,
+					&betaOrganizationFederationIssuersUpdate,
+					&betaOrganizationFederationIssuersList,
+					&betaOrganizationFederationIssuersArchive,
+				},
+			},
+			{
+				Name:     "beta:organization:federation:rules",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationFederationRulesCreate,
+					&betaOrganizationFederationRulesRetrieve,
+					&betaOrganizationFederationRulesUpdate,
+					&betaOrganizationFederationRulesList,
+					&betaOrganizationFederationRulesArchive,
+				},
+			},
+			{
+				Name:     "beta:organization:federation:rules:workspaces",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationFederationRulesWorkspacesList,
+					&betaOrganizationFederationRulesWorkspacesAdd,
+					&betaOrganizationFederationRulesWorkspacesRemove,
+				},
+			},
+			{
+				Name:     "beta:organization:invites",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationInvitesCreate,
+					&betaOrganizationInvitesRetrieve,
+					&betaOrganizationInvitesList,
+					&betaOrganizationInvitesDelete,
+				},
+			},
+			{
+				Name:     "beta:organization:service-accounts",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationServiceAccountsCreate,
+					&betaOrganizationServiceAccountsRetrieve,
+					&betaOrganizationServiceAccountsUpdate,
+					&betaOrganizationServiceAccountsList,
+					&betaOrganizationServiceAccountsArchive,
+				},
+			},
+			{
+				Name:     "beta:organization:service-accounts:workspaces",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationServiceAccountsWorkspacesList,
+					&betaOrganizationServiceAccountsWorkspacesAdd,
+					&betaOrganizationServiceAccountsWorkspacesRemove,
+				},
+			},
+			{
+				Name:     "beta:organization:users",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationUsersRetrieve,
+					&betaOrganizationUsersUpdate,
+					&betaOrganizationUsersList,
+					&betaOrganizationUsersRemove,
+				},
+			},
+			{
+				Name:     "beta:organization:workspaces",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationWorkspacesCreate,
+					&betaOrganizationWorkspacesRetrieve,
+					&betaOrganizationWorkspacesUpdate,
+					&betaOrganizationWorkspacesList,
+					&betaOrganizationWorkspacesArchive,
+				},
+			},
+			{
+				Name:     "beta:organization:workspaces:rate-limits",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationWorkspacesRateLimitsList,
+				},
+			},
+			{
+				Name:     "beta:organization:workspaces:members",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationWorkspacesMembersRetrieve,
+					&betaOrganizationWorkspacesMembersUpdate,
+					&betaOrganizationWorkspacesMembersList,
+					&betaOrganizationWorkspacesMembersAdd,
+					&betaOrganizationWorkspacesMembersRemove,
+				},
+			},
+			{
+				Name:     "beta:organization:workspaces:service-accounts",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationWorkspacesServiceAccountsRetrieve,
+					&betaOrganizationWorkspacesServiceAccountsUpdate,
+					&betaOrganizationWorkspacesServiceAccountsList,
+					&betaOrganizationWorkspacesServiceAccountsAdd,
+					&betaOrganizationWorkspacesServiceAccountsRemove,
+				},
+			},
+			{
+				Name:     "beta:organization:rate-limits",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationRateLimitsList,
+				},
+			},
+			{
+				Name:     "beta:organization:compliance-settings",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationComplianceSettingsRetrieve,
+					&betaOrganizationComplianceSettingsUpdate,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:summaries",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsSummariesList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:users",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsUsersList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:apps:chat:projects",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsAppsChatProjectsList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:connectors",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsConnectorsList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:plugins",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsPluginsList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:skills",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsSkillsList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:artifacts",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsArtifactsList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:usage-report",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsUsageReportList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:user-usage-report",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsUserUsageReportList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:cost-report",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsCostReportList,
+				},
+			},
+			{
+				Name:     "beta:organization:analytics:user-cost-report",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationAnalyticsUserCostReportList,
+				},
+			},
+			{
+				Name:     "beta:organization:spend-limits",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationSpendLimitsRetrieve,
+					&betaOrganizationSpendLimitsList,
+					&betaOrganizationSpendLimitsDelete,
+					&betaOrganizationSpendLimitsSet,
+				},
+			},
+			{
+				Name:     "beta:organization:spend-limits:effective",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationSpendLimitsEffectiveList,
+				},
+			},
+			{
+				Name:     "beta:organization:spend-limits:increase-requests",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationSpendLimitsIncreaseRequestsRetrieve,
+					&betaOrganizationSpendLimitsIncreaseRequestsList,
+					&betaOrganizationSpendLimitsIncreaseRequestsApprove,
+					&betaOrganizationSpendLimitsIncreaseRequestsDeny,
+				},
+			},
+			{
+				Name:     "beta:organization:rbac-groups",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationRBACGroupsCreate,
+					&betaOrganizationRBACGroupsRetrieve,
+					&betaOrganizationRBACGroupsUpdate,
+					&betaOrganizationRBACGroupsList,
+					&betaOrganizationRBACGroupsDelete,
+				},
+			},
+			{
+				Name:     "beta:organization:rbac-groups:members",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationRBACGroupsMembersList,
+					&betaOrganizationRBACGroupsMembersAdd,
+					&betaOrganizationRBACGroupsMembersRemove,
+				},
+			},
+			{
+				Name:     "beta:organization:rbac-roles",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationRBACRolesRetrieve,
+					&betaOrganizationRBACRolesList,
+				},
+			},
+			{
+				Name:     "beta:organization:rbac-roles:permissions",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationRBACRolesPermissionsList,
+				},
+			},
+			{
+				Name:     "beta:organization:plugins",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationPluginsCreate,
+					&betaOrganizationPluginsRetrieve,
+					&betaOrganizationPluginsUpdate,
+					&betaOrganizationPluginsList,
+					&betaOrganizationPluginsDelete,
+				},
+			},
+			{
+				Name:     "beta:organization:plugins:versions",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationPluginsVersionsCreate,
+					&betaOrganizationPluginsVersionsRetrieve,
+					&betaOrganizationPluginsVersionsList,
+					&betaOrganizationPluginsVersionsDownload,
+				},
+			},
+			{
+				Name:     "beta:organization:plugins:installation-settings",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationPluginsInstallationSettingsList,
+					&betaOrganizationPluginsInstallationSettingsRemove,
+					&betaOrganizationPluginsInstallationSettingsSet,
+				},
+			},
+			{
+				Name:     "beta:organization:plugins:shares",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationPluginsSharesList,
+				},
+			},
+			{
+				Name:     "beta:organization:plugin-marketplaces",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationPluginMarketplacesRetrieve,
+					&betaOrganizationPluginMarketplacesUpdate,
+					&betaOrganizationPluginMarketplacesList,
+					&betaOrganizationPluginMarketplacesValidateArchive,
+					&betaOrganizationPluginMarketplacesValidateRepository,
+				},
+			},
 			{
 				Name:            "@manpages",
 				Usage:           "Generate documentation for 'man'",

@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -18,12 +16,13 @@ func TestBetaMemoryStoresMemoryVersionsRetrieve(t *testing.T) {
 			"--memory-version-id", "memory_version_id",
 			"--view", "basic",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
 
 func TestBetaMemoryStoresMemoryVersionsList(t *testing.T) {
-	t.Skip("buildURL drops path-level query params (SDK-4349)")
+	t.Skip("buildURL drops path-level query params")
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
@@ -38,9 +37,11 @@ func TestBetaMemoryStoresMemoryVersionsList(t *testing.T) {
 			"--memory-id", "memory_id",
 			"--operation", "created",
 			"--page", "page",
+			"--service-account-id", "service_account_id",
 			"--session-id", "session_id",
 			"--view", "basic",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -54,6 +55,7 @@ func TestBetaMemoryStoresMemoryVersionsRedact(t *testing.T) {
 			"--memory-store-id", "memory_store_id",
 			"--memory-version-id", "memory_version_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

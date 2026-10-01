@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-
 package cmd
 
 import (
@@ -27,14 +25,19 @@ var betaSkillsCreate = cli.Command{
 			FileInput: true,
 		},
 		&requestflag.Flag[*string]{
-			Name:     "display-title",
-			Usage:    "Display title for the skill.\n\nThis is a human-readable label that is not included in the prompt sent to the model.",
-			BodyPath: "display_title",
+			Name:     "display-name",
+			Usage:    "Human-readable, single-line label for the Skill. Maximum 255 characters.\nAlways set: derived from the SKILL.md frontmatter `name` when omitted at\ncreation. Not unique.",
+			BodyPath: "display_name",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaSkillsCreate,
@@ -57,6 +60,11 @@ var betaSkillsRetrieve = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaSkillsRetrieve,
 	HideHelpCommand: true,
@@ -69,16 +77,16 @@ var betaSkillsList = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[int64]{
 			Name:      "limit",
-			Usage:     "Number of results to return per page.\n\nMaximum value is 100. Defaults to 20.",
+			Usage:     "Number of results to return per page.\n\nRanges from `1` to `1000`. Defaults to `20`.",
 			Default:   20,
 			QueryPath: "limit",
 		},
-		&requestflag.Flag[*string]{
+		&requestflag.Flag[string]{
 			Name:      "page",
 			Usage:     "Pagination token for fetching a specific page of results.\n\nPass the value from a previous response's `next_page` field to get the next page of results.",
 			QueryPath: "page",
 		},
-		&requestflag.Flag[*string]{
+		&requestflag.Flag[string]{
 			Name:      "source",
 			Usage:     "Filter skills by source.\n\nIf provided, only skills from the specified source will be returned:\n* `\"custom\"`: only return user-created skills\n* `\"anthropic\"`: only return Anthropic-created skills",
 			QueryPath: "source",
@@ -87,6 +95,11 @@ var betaSkillsList = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
@@ -112,6 +125,11 @@ var betaSkillsDelete = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			Usage:      "Optional header to select the Workspace for this request. The value is a Workspace ID (for example, `wrkspc_011CZkZaBF1tNoB5wlCeusgy`).\n\nOnly needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaSkillsDelete,
